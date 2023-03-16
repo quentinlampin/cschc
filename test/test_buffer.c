@@ -63,6 +63,7 @@ int test_buffer_shift(){
     assert(shifted_buffer->padding_length == 4);
     assert(memcmp(shifted_buffer->content,shifted_buffer_content_2, 4) == 0);
     buffer_deinit(shifted_buffer);
+    buffer_deinit(buffer_1);
 
     buffer_t* buffer_2 = buffer_init(buffer_content_2, 4, LEFT);
 
@@ -73,6 +74,7 @@ int test_buffer_shift(){
     assert(shifted_buffer->padding_length == 0);
     assert(memcmp(shifted_buffer->content,shifted_buffer_content_3, 1) == 0);
     buffer_deinit(shifted_buffer);
+    buffer_deinit(buffer_2);
 
     buffer_t* buffer_3 = buffer_init(buffer_content_3, 16, LEFT);
 
@@ -83,6 +85,7 @@ int test_buffer_shift(){
     assert(shifted_buffer->padding_length == 4);
     assert(memcmp(shifted_buffer->content,shifted_buffer_content_4, 2) == 0);
     buffer_deinit(shifted_buffer);
+    buffer_deinit(buffer_3);
 
     buffer_t* buffer_4 = buffer_init(buffer_content_4, 12, RIGHT);
 
@@ -101,6 +104,7 @@ int test_buffer_shift(){
     assert(shifted_buffer->padding_length == 0);
     assert(memcmp(shifted_buffer->content,shifted_buffer_content_6, 3) == 0);
     buffer_deinit(shifted_buffer);
+    buffer_deinit(buffer_4);
 
     buffer_t* buffer_5 = buffer_init(buffer_content_5, 16, RIGHT);
     shifted_buffer = buffer_shift(buffer_5, 6);
@@ -110,6 +114,7 @@ int test_buffer_shift(){
     assert(shifted_buffer->padding_length == 6);
     assert(memcmp(shifted_buffer->content,shifted_buffer_content_7, 2) == 0);
     buffer_deinit(shifted_buffer);
+    buffer_deinit(buffer_5);
 
     return TEST_SUCCESS;
 }
@@ -134,6 +139,7 @@ int test_buffer_pad(){
     assert(buffer_padded->byte_length == 2);
     assert(memcmp(buffer_padded->content, buffer_padded_content_1, 2) == 0);
     buffer_deinit(buffer_padded);
+    buffer_deinit(buffer_1);
 
     buffer_t* buffer_2 = buffer_init(buffer_content_1, 12, RIGHT);
     const unsigned char buffer_padded_content_2[] = {0x0f, 0x0f};
@@ -143,6 +149,7 @@ int test_buffer_pad(){
     assert(buffer_padded->byte_length == 2);
     assert(memcmp(buffer_padded->content, buffer_padded_content_2, 2) == 0);
     buffer_deinit(buffer_padded);
+    buffer_deinit(buffer_2);
 
     const unsigned char buffer_content_2[] = {0x0f, 0xff};
     buffer_t* buffer_3 = buffer_init(buffer_content_2, 12, LEFT);
@@ -153,6 +160,7 @@ int test_buffer_pad(){
     assert(buffer_padded->byte_length == 2);
     assert(memcmp(buffer_padded->content, buffer_padded_content_3, 2) == 0);
     buffer_deinit(buffer_padded);
+    buffer_deinit(buffer_3);
 
     return TEST_SUCCESS;
 }
@@ -169,6 +177,10 @@ int test_buffer_concat(){
     assert(buffer_1_concat->length == 32);
     assert(buffer_1_concat->padding == LEFT);
     assert(memcmp(buffer_1_concat->content, buffer_content_expected_1, 4) == 0);
+
+    buffer_deinit(buffer_1_1);
+    buffer_deinit(buffer_1_2);
+    buffer_deinit(buffer_1_concat);
 
     return TEST_SUCCESS;
 }
@@ -196,6 +208,14 @@ int test_buffer_equal(){
     buffer_t* buffer_7 = buffer_init(buffer_content_7, 24, LEFT);
     assert(buffer_equal(buffer_6, buffer_7, 24) == false);
     assert(buffer_equal(buffer_6, buffer_7, 23) == true);
+
+    buffer_deinit(buffer_1);
+    buffer_deinit(buffer_2);
+    buffer_deinit(buffer_3);
+    buffer_deinit(buffer_4);
+    buffer_deinit(buffer_5);
+    buffer_deinit(buffer_6);
+    buffer_deinit(buffer_7);
 
 
     return TEST_SUCCESS;
@@ -237,6 +257,20 @@ int test_buffer_extract(){
     buffer_t* buffer_extract_6 = buffer_extract(buffer_6, 0, 20, LEFT);
     const unsigned char buffer_content_expected_6[] = {0x0f, 0xff, 0xe0};
     assert(memcmp(buffer_extract_6->content, buffer_content_expected_6, 3) == 0);
+
+    buffer_deinit(buffer_1);
+    buffer_deinit(buffer_2);
+    buffer_deinit(buffer_3);
+    buffer_deinit(buffer_4);
+    buffer_deinit(buffer_5);
+    buffer_deinit(buffer_6);
+
+    buffer_deinit(buffer_extract_1);
+    buffer_deinit(buffer_extract_2);
+    buffer_deinit(buffer_extract_3);
+    buffer_deinit(buffer_extract_4);
+    buffer_deinit(buffer_extract_5);
+    buffer_deinit(buffer_extract_6);
 
     return TEST_SUCCESS;
 }
