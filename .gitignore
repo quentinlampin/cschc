@@ -52,7 +52,7 @@ Mkfile.old
 dkms.conf
 
 # build directory
-build
+build*
 
 # testing directory
 Testing
