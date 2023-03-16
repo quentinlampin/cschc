@@ -20,7 +20,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/test-build --verbose
       
     - name: test
-      run: ctest --test-dir ${{github.workspace}}/test-build
+      run: ctest --test-dir ${{github.workspace}}/test-build  --output-on-failure
       
     - name: configure cmake for release with debug
       run: cmake -B ${{github.workspace}}/build-release-debug -DCMAKE_BUILD_TYPE=RelWithDebInfo
