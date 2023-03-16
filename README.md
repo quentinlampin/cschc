@@ -23,13 +23,23 @@ conda env create -f dev-environment.yml
 - Build for debubbing & testing:
 
 ```bash
-cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=On;
-cmake --build build --verbose;
-ctest --test-dir ./build 
+cmake -S . -B build-test -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=On;
+cmake --build build-test --verbose;
+ctest --test-dir build-test;
+```
+
+- Build for release with debugging symbols:
+
+```bash
+cmake -S. -B build-release-debug -DCMAKE_BUILD_TYPE=RelWithDebInfo; 
+cmake --build build-release-debug --verbose;
 ```
 
 - Build for release:
+
 ```bash
-cmake -S. -Brelease -DCMAKE_BUILD_TYPE=Release; cmake --build release --verbose
+cmake -S. -B build-release -DCMAKE_BUILD_TYPE=Release; 
+cmake --build build-release --verbose;
 ```
+
 
