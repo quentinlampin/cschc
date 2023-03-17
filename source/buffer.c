@@ -245,6 +245,8 @@ bool buffer_equal(buffer_t* buffer_1, buffer_t* buffer_2, int length){
     int byte_length;
     uint8_t mask;
 
+    bool return_value;
+
     buffer_1_padded = buffer_pad(buffer_1, RIGHT);
     buffer_2_padded = buffer_pad(buffer_2, RIGHT);
     
@@ -263,7 +265,10 @@ bool buffer_equal(buffer_t* buffer_1, buffer_t* buffer_2, int length){
     if(memcmp(buffer_1_padded->content, buffer_2_padded->content, byte_length-1) != 0){
         return false;
     }
-    return (buffer_1_padded->content[byte_length-1] & mask) == (buffer_2_padded->content[byte_length-1] & mask);
+    return_value = (buffer_1_padded->content[byte_length-1] & mask) == (buffer_2_padded->content[byte_length-1] & mask);
+    buffer_deinit(buffer_1_padded);
+    buffer_deinit(buffer_2_padded);
+    return return_value;
 }
 
 /**

@@ -33,6 +33,10 @@ header_descriptor_t* header_descriptor_init(const char* id, int field_descriptor
 }
 
 void header_descriptor_deinit(header_descriptor_t* header_descriptor){
-    free(header_descriptor->field_descriptors);
+    int index;
+
+    for(index=0; index<header_descriptor->field_descriptors_count; index++){
+        field_descriptor_deinit(header_descriptor->field_descriptors[index]);
+    }
     free(header_descriptor);
 }
