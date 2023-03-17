@@ -1,5 +1,4 @@
 #include "ipv6.h"
-#include "cschc.h"
 
 /**
  * @brief parse an IPv6 header and returns its header descriptor

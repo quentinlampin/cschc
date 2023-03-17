@@ -12,6 +12,8 @@ Note 3: Authentication and Encapsulating Security payload parsing is not impleme
  * 
  */
 
+#include "cschc.h"
+
 #define IPV6_HEADER_ID "IPv6"
 #define IPV6_VERSION            IPV6_HEADER_ID":Version"
 #define IPV6_TRAFFIC_CLASS      IPV6_HEADER_ID":Traffic Class"
@@ -21,3 +23,7 @@ Note 3: Authentication and Encapsulating Security payload parsing is not impleme
 #define IPV6_HOP_LIMIT          IPV6_HEADER_ID":Hop Limit"
 #define IPV6_SRC_ADDRESS        IPV6_HEADER_ID":Source Address"
 #define IPV6_DST_ADDRESS        IPV6_HEADER_ID":Destination Address"
+
+#define IPV6_HEADER_LENGTH 320
+
+header_descriptor_t* parse_ipv6_header(buffer_t* buffer);
