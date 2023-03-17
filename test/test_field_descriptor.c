@@ -22,6 +22,8 @@ int test_field_descriptor_init_deinit(){
     assert(field_descriptor != NULL);
     assert(memcmp(field_descriptor->buffer->content, buffer_content, 4) == 0);
     assert(strcmp(field_descriptor->id, field_id) == 0);
+
+    field_descriptor_deinit(field_descriptor);
     return TEST_SUCCESS;
 }
 
