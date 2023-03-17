@@ -1,4 +1,4 @@
-[![build](https://github.com/quentinlampin/cschc/actions/workflows/cmake.yml/badge.svg)](https://github.com/quentinlampin/cschc/actions/workflows/cmake.yml)[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![build](https://github.com/quentinlampin/cschc/actions/workflows/cmake.yml/badge.svg)](https://github.com/quentinlampin/cschc/actions/workflows/cmake.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # CSCHC - Implementation of Static Context Header Compression (SCHC), RFC 8724
 
 
