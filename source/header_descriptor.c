@@ -38,5 +38,6 @@ void header_descriptor_deinit(header_descriptor_t* header_descriptor){
     for(index=0; index<header_descriptor->field_descriptors_count; index++){
         field_descriptor_deinit(header_descriptor->field_descriptors[index]);
     }
+    free(header_descriptor->field_descriptors);
     free(header_descriptor);
 }
