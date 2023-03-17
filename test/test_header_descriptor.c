@@ -27,7 +27,6 @@ int test_header_descriptor_init_deinit(){
     assert(header_descriptor->length == 56);
     assert(header_descriptor->field_descriptors_count == 2);
 
-    // header_descriptor_deinit(header_descriptor);
     header_descriptor_deinit(header_descriptor);
     return TEST_SUCCESS;
 }
