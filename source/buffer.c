@@ -67,7 +67,7 @@ void _shift(unsigned char *out, unsigned char *in, int size, int shift){
  * @param length length of buffer in bits.
  * @return buffer_t* 
  */
-buffer_t* _buffer_malloc(uint8_t length){
+buffer_t* _buffer_malloc(uint16_t length){
     buffer_t* buffer;
     
     buffer = (buffer_t*) malloc(sizeof(buffer_t));
@@ -301,6 +301,8 @@ buffer_t* buffer_extract(buffer_t* buffer, uint16_t bit_start, uint16_t bit_leng
     _shift(buffer_temp, buffer->content + byte_start, area_of_interest_byte_length, shift);
     memcpy(buffer_extracted->content, buffer_temp, buffer_extracted->byte_length);
     free(buffer_temp);
+
+    buffer_extracted->padding = padding;
     
     return buffer_extracted;
 }
