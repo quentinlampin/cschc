@@ -23,6 +23,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/field_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/header_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/protocol/ipv6.c
+    ${PROJECT_SOURCE_DIR}/source/protocol/udp.c
 )
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
@@ -44,10 +45,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     target_link_libraries(test_header_descriptor PRIVATE cschc)
     add_test(NAME test_header_descriptor COMMAND $<TARGET_FILE:test_header_descriptor>)
 
-    # - header descriptor
+    # - IPv6 parser
     add_executable(test_ipv6_parser ${PROJECT_SOURCE_DIR}/test/test_ipv6_parser.c)
     target_link_libraries(test_ipv6_parser PRIVATE cschc)
     add_test(NAME test_ipv6_parser COMMAND $<TARGET_FILE:test_ipv6_parser>)
+
+    # - UDP parser
+    add_executable(test_udp_parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
+    target_link_libraries(test_udp_parser PRIVATE cschc)
+    add_test(NAME test_udp_parser COMMAND $<TARGET_FILE:test_udp_parser>)
 
 endif()
 
