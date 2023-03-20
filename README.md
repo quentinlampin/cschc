@@ -1,7 +1,6 @@
 [![build](https://github.com/quentinlampin/cschc/actions/workflows/cmake.yml/badge.svg)](https://github.com/quentinlampin/cschc/actions/workflows/cmake.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 # CSCHC - Implementation of Static Context Header Compression (SCHC), RFC 8724
 
-
 ## In a nutshell
 
 C implementation of Static Context Header Compression (SCHC), RFC 8724
@@ -43,6 +42,10 @@ cmake --build build-release-debug --verbose;
 cmake -S. -B build-release -DCMAKE_BUILD_TYPE=Release; 
 cmake --build build-release --verbose;
 ```
+
+- Build for nRF5340-DK:
+    - open `projects/nRF5340-DK/cschc.emProject/`
+    - build and load
 
 ## Note for Darwin users (macOS)
 
