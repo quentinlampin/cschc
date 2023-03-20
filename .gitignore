@@ -59,4 +59,6 @@ Testing
 
 # VSCode files
 .vscode
+
+# SEGGER Embedded studio
 *.emSession
