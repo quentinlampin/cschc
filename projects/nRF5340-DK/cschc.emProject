@@ -1,6 +1,6 @@
 <!DOCTYPE CrossStudio_Project_File>
-<solution Name="Executable_1" target="8" version="2">
-  <project Name="Executable_1">
+<solution Name="cschc" target="8" version="2">
+  <project Name="cschc">
     <configuration
       LIBRARY_IO_TYPE="RTT"
       Name="Common"
