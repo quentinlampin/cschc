@@ -1,14 +1,15 @@
-
 /**
- * @brief UDP header parser
- *
- *  Parser for the UDP protocol header as defined in RFC768 [1].
- *
- *
- *  [1] "RFC768: User Datagram Protocol", J. Postel
+ * @brief  UDP header parser for cSCHC
+ * @author Quentin Lampin (quentin.lampin@orange.com)
+ * @brief Parser for the UDP protocol header as defined in RFC768 [1].
+ * 
+ *        [1] "RFC768: User Datagram Protocol", J. Postel
+ * @version 0.1
+ * @date 2023-03-20
+ * 
+ * @copyright Copyright (c) Orange 2023
  * 
  */
-
 #include "cschc.h"
 
 #define UDP_HEADER_ID           "UDP"
