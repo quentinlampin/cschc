@@ -180,5 +180,9 @@ void buffer_deinit(buffer_t* buffer);
 field_descriptor_t* field_descriptor_init(const char* id, buffer_t* buffer);
 void field_descriptor_deinit(field_descriptor_t* field_descriptor);
 
+header_descriptor_t* header_descriptor_malloc(int field_descriptors_count);
+void header_descriptor_free(header_descriptor_t* header_descriptor);
 header_descriptor_t* header_descriptor_init(const char* id, int field_descriptors_count, ...);
 void header_descriptor_deinit(header_descriptor_t* header_descriptor);
+header_descriptor_t* header_descriptor_concat(const char* id, int header_descriptors_count, ...);
+

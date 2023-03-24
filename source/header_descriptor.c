@@ -10,6 +10,11 @@ header_descriptor_t* header_descriptor_malloc(int field_descriptors_count){
     return header_descriptor;
 }
 
+void header_descriptor_free(header_descriptor_t* header_descriptor){
+    free(header_descriptor->field_descriptors);
+    free(header_descriptor);
+}
+
 header_descriptor_t* header_descriptor_init(const char* id, int field_descriptors_count, ...){
     va_list field_descriptor_pointer;
     header_descriptor_t* header_descriptor;
@@ -38,6 +43,40 @@ void header_descriptor_deinit(header_descriptor_t* header_descriptor){
     for(index=0; index<header_descriptor->field_descriptors_count; index++){
         field_descriptor_deinit(header_descriptor->field_descriptors[index]);
     }
-    free(header_descriptor->field_descriptors);
-    free(header_descriptor);
+    header_descriptor_free(header_descriptor);
+}
+
+header_descriptor_t* header_descriptor_concat(const char* id, int header_descriptors_count, ...){
+    va_list header_descriptor_pointer;
+    header_descriptor_t* header_descriptor_result;
+    header_descriptor_t* header_descriptor_iter;
+    int va_index;
+    int fd_index;
+    
+    uint8_t rfd_index = 0;
+    uint8_t field_descriptors_count = 0;
+
+    va_start(header_descriptor_pointer, header_descriptors_count);
+    for(va_index=0; va_index < header_descriptors_count; va_index++){
+        header_descriptor_iter = va_arg(header_descriptor_pointer, header_descriptor_t*);
+        field_descriptors_count += header_descriptor_iter->field_descriptors_count;
+    }
+    va_end(header_descriptor_pointer);
+    header_descriptor_result = header_descriptor_malloc(field_descriptors_count);
+    header_descriptor_result->id = id;
+    header_descriptor_result->length = 0;
+    header_descriptor_result->field_descriptors_count = field_descriptors_count;
+
+    va_start(header_descriptor_pointer, header_descriptors_count);
+    for(va_index=0; va_index < header_descriptors_count; va_index++){
+        header_descriptor_iter = va_arg(header_descriptor_pointer, header_descriptor_t*);
+        for(fd_index=0; fd_index < header_descriptor_iter->field_descriptors_count; fd_index++){
+            header_descriptor_result->field_descriptors[rfd_index++] = header_descriptor_iter->field_descriptors[fd_index];
+        }
+        header_descriptor_result->length += header_descriptor_iter->length;
+        header_descriptor_free(header_descriptor_iter);
+    }
+    va_end(header_descriptor_pointer);
+
+    return header_descriptor_result;
 }
