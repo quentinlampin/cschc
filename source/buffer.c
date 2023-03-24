@@ -289,6 +289,9 @@ buffer_t* buffer_extract(buffer_t* buffer, uint16_t bit_start, uint16_t bit_leng
     uint16_t area_of_interest_byte_length;
     int shift;
 
+    if(bit_length == 0){
+        bit_length = buffer->length - bit_start;
+    }
     buffer_extracted = _buffer_malloc(bit_length);
 
     bit_start_absolute = (buffer->padding == LEFT)? bit_start+buffer->padding_length : bit_start;
