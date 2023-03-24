@@ -1,7 +1,7 @@
 #include "ipv6.h"
 
 /**
- * @brief parse an IPv6 header and returns its header descriptor
+ * @brief parse a IPv6 header and returns its header descriptor
  * 
  * @param[in] buffer IPv6 header, assumed to be right-padded
  * @return header_descriptor_t* 

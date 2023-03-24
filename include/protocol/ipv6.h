@@ -1,14 +1,18 @@
 /**
- * @brief IPv6 header parser
-
-Parser for the IPv6 protocol header as defined in RFC8200 [1].
-
-Note 1: Hop by Hop Options, Routing header parsing is not implemented yet.
-Note 2: Fragment header parsing is not implemented as fragmentation and reassembly
-        are handled by SCHC-RF.
-Note 3: Authentication and Encapsulating Security payload parsing is not implemented yet.
-
-[1] "RFC8200: Internet Protocol, Version 6 (IPv6) Specification", S. Deering et al.
+ * @brief  IPv6 header parser for cSCHC
+ * @author Quentin Lampin (quentin.lampin@orange.com)
+ * @brief Parser for the IPv6 protocol header as defined in RFC8200 [1].
+ *
+ *        Note 1: Hop by Hop Options, Routing header parsing is not implemented yet.
+ *        Note 2: Fragment header parsing is not implemented as fragmentation and reassembly
+ *                are handled by SCHC-RF.
+ *        Note 3: Authentication and Encapsulating Security payload parsing is not implemented yet.
+ *
+ *        [1] "RFC8200: Internet Protocol, Version 6 (IPv6) Specification", S. Deering et al.
+ * @version 0.1
+ * @date 2023-03-20
+ * 
+ * @copyright Copyright (c) Orange 2023
  * 
  */
 
