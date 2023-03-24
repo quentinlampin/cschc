@@ -59,3 +59,7 @@ Testing
 
 # VSCode files
 .vscode
+
+# SEGGER Embedded studio
+*.emSession
+/projects/nRF5340-DK/Output
