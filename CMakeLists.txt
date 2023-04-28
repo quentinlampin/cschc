@@ -24,6 +24,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/header_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/protocol/ipv6.c
     ${PROJECT_SOURCE_DIR}/source/protocol/udp.c
+    ${PROJECT_SOURCE_DIR}/source/protocol/coap.c
 )
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
@@ -54,6 +55,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test_udp_parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
     target_link_libraries(test_udp_parser PRIVATE cschc)
     add_test(NAME test_udp_parser COMMAND $<TARGET_FILE:test_udp_parser>)
+
+    # - CoAP parser
+    add_executable(test_coap_parser ${PROJECT_SOURCE_DIR}/test/test_coap_parser.c)
+    target_link_libraries(test_coap_parser PRIVATE cschc)
+    add_test(NAME test_coap_parser COMMAND $<TARGET_FILE:test_coap_parser>)
 
 endif()
 
