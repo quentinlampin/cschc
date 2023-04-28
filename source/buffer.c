@@ -287,6 +287,7 @@ buffer_t* buffer_extract(buffer_t* buffer, uint16_t bit_start, uint16_t bit_leng
     uint16_t byte_start;
     uint16_t byte_end;
     uint16_t area_of_interest_byte_length;
+    uint8_t mask;
     int shift;
 
     if(bit_length == 0){
@@ -302,6 +303,14 @@ buffer_t* buffer_extract(buffer_t* buffer, uint16_t bit_start, uint16_t bit_leng
     buffer_temp = (unsigned char*)malloc(area_of_interest_byte_length*sizeof(char));
     shift = (padding == LEFT)? buffer_extracted->padding_length - bit_start_absolute % 8 : - bit_start_absolute % 8;
     _shift(buffer_temp, buffer->content + byte_start, area_of_interest_byte_length, shift);
+    
+    mask = (padding == LEFT)? 0xff >> buffer_extracted->padding_length : (0xff << buffer_extracted->padding_length) & 0xff;
+    if(padding == LEFT){
+        buffer_temp[0] &= mask;
+    }else{
+        buffer_temp[area_of_interest_byte_length-1] &= mask;
+    }
+
     memcpy(buffer_extracted->content, buffer_temp, buffer_extracted->byte_length);
     free(buffer_temp);
 
