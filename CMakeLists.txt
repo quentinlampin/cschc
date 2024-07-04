@@ -27,6 +27,19 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/protocol/coap.c
 )
 
+# ADD MY OWN LIB FOR NOW
+add_library(draft-cschc
+    # ...
+)
+
+# ADD MY OWN TESTS FOR NOW
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
+    # tests
+    enable_testing()
+
+    # ...
+endif()
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     # tests
     enable_testing()
