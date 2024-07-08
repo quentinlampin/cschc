@@ -14,66 +14,29 @@ project(cschc
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include/
-    ${PROJECT_SOURCE_DIR}/include/protocol/
+    ${PROJECT_SOURCE_DIR}/include/parser/
+    ${PROJECT_SOURCE_DIR}/include/parser/protocol/
 )
 
-add_library(cschc 
-    ${PROJECT_SOURCE_DIR}/source/cschc.c
-    ${PROJECT_SOURCE_DIR}/source/buffer.c
-    ${PROJECT_SOURCE_DIR}/source/field_descriptor.c
-    ${PROJECT_SOURCE_DIR}/source/header_descriptor.c
-    ${PROJECT_SOURCE_DIR}/source/protocol/ipv6.c
-    ${PROJECT_SOURCE_DIR}/source/protocol/udp.c
-    ${PROJECT_SOURCE_DIR}/source/protocol/coap.c
+add_library(cschc
+    ${PROJECT_SOURCE_DIR}/source/parser/protocol/ipv6.c
+    ${PROJECT_SOURCE_DIR}/source/parser/parser.c
 )
 
-# ADD MY OWN LIB FOR NOW
-add_library(draft-cschc
-    # ...
-)
-
-# ADD MY OWN TESTS FOR NOW
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-    # tests
-    enable_testing()
-
-    # ...
-endif()
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     # tests
     enable_testing()
-
-    # - buffer
-    add_executable(test_buffer ${PROJECT_SOURCE_DIR}/test/test_buffer.c)
-    target_link_libraries(test_buffer PRIVATE cschc)
-    add_test(NAME test_buffer COMMAND $<TARGET_FILE:test_buffer>)
-
-    # - field descriptor
-    add_executable(test_field_descriptor ${PROJECT_SOURCE_DIR}/test/test_field_descriptor.c)
-    target_link_libraries(test_field_descriptor PRIVATE cschc)
-    add_test(NAME test_field_descriptor COMMAND $<TARGET_FILE:test_field_descriptor>)
-
-    # - header descriptor
-    add_executable(test_header_descriptor ${PROJECT_SOURCE_DIR}/test/test_header_descriptor.c)
-    target_link_libraries(test_header_descriptor PRIVATE cschc)
-    add_test(NAME test_header_descriptor COMMAND $<TARGET_FILE:test_header_descriptor>)
 
     # - IPv6 parser
-    add_executable(test_ipv6_parser ${PROJECT_SOURCE_DIR}/test/test_ipv6_parser.c)
-    target_link_libraries(test_ipv6_parser PRIVATE cschc)
-    add_test(NAME test_ipv6_parser COMMAND $<TARGET_FILE:test_ipv6_parser>)
+    add_executable(test-ipv6-parser ${PROJECT_SOURCE_DIR}/test/test_ipv6_parser.c)
+    target_link_libraries(test-ipv6-parser PRIVATE cschc)
+    add_test(NAME test-ipv6-parser COMMAND $<TARGET_FILE:test-ipv6-parser>)
 
     # - UDP parser
-    add_executable(test_udp_parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
-    target_link_libraries(test_udp_parser PRIVATE cschc)
-    add_test(NAME test_udp_parser COMMAND $<TARGET_FILE:test_udp_parser>)
-
-    # - CoAP parser
-    add_executable(test_coap_parser ${PROJECT_SOURCE_DIR}/test/test_coap_parser.c)
-    target_link_libraries(test_coap_parser PRIVATE cschc)
-    add_test(NAME test_coap_parser COMMAND $<TARGET_FILE:test_coap_parser>)
-
+    add_executable(test-udp-parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
+    target_link_libraries(test-udp-parser PRIVATE cschc)
+    add_test(NAME test-udp-parser COMMAND $<TARGET_FILE:test-udp-parser>)
 endif()
 
 
