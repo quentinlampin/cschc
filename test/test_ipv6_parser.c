@@ -42,8 +42,12 @@ void test_ipv6_parser(void) {
       0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xa2};
 
+  int        next_offset;
   ipv6_hdr_t ipv6_parsed_header;
-  parse_ipv6_header(&ipv6_parsed_header, ipv6_header, 40);
+
+  next_offset = parse_ipv6_header(&ipv6_parsed_header, ipv6_header, 40);
+
+  assert(next_offset == 40);
 
   // Version
   assert(memcmp(ipv6_parsed_header.version, ipv6_expected_version,
