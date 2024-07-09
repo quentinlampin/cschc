@@ -19,7 +19,6 @@ include_directories(
 )
 
 add_library(cschc
-    ${PROJECT_SOURCE_DIR}/source/parser/protocol/ipv6.c
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
 )
 
