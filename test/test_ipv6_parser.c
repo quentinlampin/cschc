@@ -6,25 +6,6 @@
 
 /* ********************************************************************** */
 
-void test_unpack_ver_tc_fl(void) {
-  const uint32_t packed_value          = 0b01101111111110011010101011110010;
-  const uint8_t  ipv6_expected_version = 0b0110;
-  const uint8_t  ipv6_expected_traffic_class = 0b11111111;
-  const uint32_t ipv6_expected_flow_label    = 0b10011010101011110010;
-
-  uint8_t  ipv6_version, ipv6_traffic_class;
-  uint32_t ipv6_flow_label;
-
-  unpack_ver_tc_fl(&ipv6_version, &ipv6_traffic_class, &ipv6_flow_label,
-                   packed_value);
-
-  assert(ipv6_version == ipv6_expected_version);
-  assert(ipv6_traffic_class == ipv6_expected_traffic_class);
-  assert(ipv6_flow_label == ipv6_expected_flow_label);
-}
-
-/* ********************************************************************** */
-
 void test_ipv6_parser(void) {
   /**
    * @brief Testing the IPv6 parser on an IPv6 header.
@@ -48,13 +29,13 @@ void test_ipv6_parser(void) {
       0x00, 0x00, 0x00, 0xa2, 0x23, 0x29, 0x23, 0x2a, 0x00, 0x10, 0x2d, 0xa1,
       0x64, 0x65, 0x61, 0x64, 0x62, 0x65, 0x65, 0x66};
 
-  const uint8_t  ipv6_expected_version          = 0x06;
-  const uint8_t  ipv6_expected_traffic_class    = 0x00;
-  const uint32_t ipv6_expected_flow_label       = 0x000000;
-  const uint16_t ipv6_expected_payload_length   = 0x0010;
-  const uint8_t  ipv6_expected_next_header      = 0x11;
-  const uint8_t  ipv6_expected_hop_limit        = 0x40;
-  const uint8_t  ipv6_expected_source_address[] = {
+  const uint8_t ipv6_expected_version[]        = {0x06};
+  const uint8_t ipv6_expected_traffic_class[]  = {0x00};
+  const uint8_t ipv6_expected_flow_label[]     = {0x00, 0x00, 0x00};
+  const uint8_t ipv6_expected_payload_length[] = {0x00, 0x10};
+  const uint8_t ipv6_expected_next_header[]    = {0x11};
+  const uint8_t ipv6_expected_hop_limit[]      = {0x40};
+  const uint8_t ipv6_expected_source_address[] = {
       0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xa1};
   const uint8_t ipv6_expected_destination_address[] = {
@@ -62,56 +43,45 @@ void test_ipv6_parser(void) {
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xa2};
 
   ipv6_hdr_t ipv6_parsed_header;
-  uint32_t   ipv6_parsed_ver_tc_fl;
-  uint8_t    ipv6_parsed_version;
-  uint8_t    ipv6_parsed_traffic_class;
-  uint32_t   ipv6_parsed_flow_label;
-  uint16_t   ipv6_parsed_payload_length;
-  uint8_t    ipv6_parsed_next_header;
-  uint8_t    ipv6_parsed_hop_limit;
-  uint8_t    ipv6_parsed_source_address[16];
-  uint8_t    ipv6_parsed_destination_address[16];
-
   parse_ipv6_header(&ipv6_parsed_header, ipv6_header, 40);
 
-  // Version, Traffic Class and Flow Label
-  ipv6_parsed_ver_tc_fl = network_to_host_long(ipv6_parsed_header.ver_tc_fl);
-  unpack_ver_tc_fl(&ipv6_parsed_version, &ipv6_parsed_traffic_class,
-                   &ipv6_parsed_flow_label, ipv6_parsed_ver_tc_fl);
-  assert(ipv6_parsed_version == ipv6_expected_version);
-  assert(ipv6_parsed_traffic_class == ipv6_expected_traffic_class);
-  assert(ipv6_parsed_flow_label == ipv6_expected_flow_label);
+  // Version
+  assert(memcmp(ipv6_parsed_header.version, ipv6_expected_version,
+                IPV6_VERSION_BYTE_LENGTH) == 0);
+
+  // Traffic Class
+  assert(memcmp(ipv6_parsed_header.traffic_class, ipv6_expected_traffic_class,
+                IPV6_TRAFFIC_CLASS_BYTE_LENGTH) == 0);
+
+  // Flow Label
+  assert(memcmp(ipv6_parsed_header.flow_label, ipv6_expected_flow_label,
+                IPV6_FLOW_LABEL_BYTE_LENGTH) == 0);
 
   // Payload Length
-  ipv6_parsed_payload_length =
-      network_to_host_short(ipv6_parsed_header.payload_length);
-  assert(ipv6_parsed_payload_length == ipv6_expected_payload_length);
+  assert(memcmp(ipv6_parsed_header.payload_length, ipv6_expected_payload_length,
+                IPV6_PAYLOAD_LENGTH_BYTE_LENGTH) == 0);
 
   // Next Header
-  ipv6_parsed_next_header = ipv6_parsed_header.next_header;
-  assert(ipv6_parsed_next_header == ipv6_expected_next_header);
+  assert(memcmp(ipv6_parsed_header.next_header, ipv6_expected_next_header,
+                IPV6_NEXT_HEADER_BYTE_LENGTH) == 0);
 
   // Hop Limit
-  ipv6_parsed_hop_limit = ipv6_parsed_header.hop_limit;
-  assert(ipv6_parsed_hop_limit == ipv6_expected_hop_limit);
+  assert(memcmp(ipv6_parsed_header.hop_limit, ipv6_expected_hop_limit,
+                IPV6_HOP_LIMIT_BYTE_LENGTH) == 0);
 
   // Source Address
-  memcpy(ipv6_parsed_source_address, ipv6_parsed_header.source_address, 16);
-  assert(memcmp(ipv6_parsed_source_address, ipv6_expected_source_address, 16) ==
-         0);
+  assert(memcmp(ipv6_parsed_header.source_address, ipv6_expected_source_address,
+                IPV6_SRC_ADDRESS_BYTE_LENGTH) == 0);
 
   // Destination Address
-  memcpy(ipv6_parsed_destination_address,
-         ipv6_parsed_header.destination_address, 16);
-  assert(memcmp(ipv6_parsed_destination_address,
-                ipv6_expected_destination_address, 16) == 0);
+  assert(memcmp(ipv6_parsed_header.destination_address,
+                ipv6_expected_destination_address,
+                IPV6_DST_ADDRESS_BYTE_LENGTH) == 0);
 }
 
 /* ********************************************************************** */
 
 int main(void) {
-  test_unpack_ver_tc_fl();
-
   test_ipv6_parser();
 
   printf("All tests passed!\n");
