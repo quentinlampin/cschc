@@ -4,45 +4,36 @@
 
 /* ********************************************************************** */
 
-uint16_t network_to_host_short(uint16_t netshort) {
-  return (netshort << 8) | (netshort >> 8);
-}
-
-/* ********************************************************************** */
-
-uint32_t network_to_host_long(uint32_t netlong) {
-  return ((netlong << 24) & 0xff000000) | ((netlong << 8) & 0x00ff0000) |
-         ((netlong >> 8) & 0x0000ff00) | ((netlong >> 24) & 0x000000ff);
-}
-
-/* ********************************************************************** */
-
 int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, const uint8_t* packet,
                       const size_t packet_len) {
-  size_t ipv6_hdr_len;
-
-  ipv6_hdr_len = sizeof(ipv6_hdr_t);
-  if (packet_len < ipv6_hdr_len) {
+  if (packet_len < IPV6_HDR_BYTE_LENGTH) {
     return -1;
   }
 
-  memcpy(ipv6_hdr, packet, ipv6_hdr_len);
+  // Extract version (4 bits), traffic class (8 bits), and flow label (20 bits)
+  ipv6_hdr->version[0] = (packet[0] >> 4) & 0x0F;
+  ipv6_hdr->traffic_class[0] =
+      ((packet[0] & 0x0F) << 4) | ((packet[1] >> 4) & 0x0F);
+  ipv6_hdr->flow_label[0] = packet[1] & 0x0F;
+  ipv6_hdr->flow_label[1] = packet[2];
+  ipv6_hdr->flow_label[2] = packet[3];
 
-  return ipv6_hdr_len;
+  // Extract other fields
+  memcpy(ipv6_hdr->payload_length, packet + 4, IPV6_HDR_BYTE_LENGTH - 4);
+
+  return IPV6_HDR_BYTE_LENGTH;
 }
 
 /* ********************************************************************** */
 
 int parse_udp_header(udp_hdr_t* udp_hdr, const uint8_t* packet, int offset,
                      const size_t packet_len) {
-  size_t udp_hdr_len;
-
-  udp_hdr_len = sizeof(udp_hdr_t);
-  if (packet_len < offset + udp_hdr_len) {
+  if (packet_len < offset + UDP_HDR_BYTE_LENGTH) {
     return -1;
   }
 
-  memcpy(udp_hdr, packet + offset, udp_hdr_len);
+  // Extract all fields
+  memcpy(udp_hdr, packet + offset, UDP_HDR_BYTE_LENGTH);
 
-  return offset + udp_hdr_len;
+  return offset + UDP_HDR_BYTE_LENGTH;
 }

@@ -8,24 +8,6 @@
 #include <stdint.h>
 
 /**
- * @brief Converts properly a 16-bit value from network byte order (big-endian)
- * into host byte order (little-endian).
- *
- * @param netshort The 16-bit value in network byte order.
- * @return The 16-bit value in host byte order.
- */
-uint16_t network_to_host_short(uint16_t netshort);
-
-/**
- * @brief Converts properly a 32-bit value from network byte order (big-endian)
- * into host byte order (little-endian).
- *
- * @param netlong The 32-bit value in network byte order.
- * @return The 32-bit value in host byte order.
- */
-uint32_t network_to_host_long(uint32_t netlong);
-
-/**
  * @brief Parses a network packet as an IPv6 header.
  *
  * @param ipv6_hdr Pointer to the IPv6 header structure to fill.
