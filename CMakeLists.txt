@@ -14,11 +14,15 @@ project(cschc
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include/
+    ${PROJECT_SOURCE_DIR}/include/utils/
     ${PROJECT_SOURCE_DIR}/include/parser/
     ${PROJECT_SOURCE_DIR}/include/parser/protocol/
+    ${PROJECT_SOURCE_DIR}/include/core/
 )
 
 add_library(cschc
+    ${PROJECT_SOURCE_DIR}/source/utils/log.c
+    ${PROJECT_SOURCE_DIR}/source/utils/binarie.c
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
 )
 
@@ -26,6 +30,11 @@ add_library(cschc
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     # tests
     enable_testing()
+
+    # - Utils
+    add_executable(test-utils ${PROJECT_SOURCE_DIR}/test/test_utils.c)
+    target_link_libraries(test-utils PRIVATE cschc)
+    add_test(NAME test-utils COMMAND $<TARGET_FILE:test-utils>)
 
     # - IPv6 parser
     add_executable(test-ipv6-parser ${PROJECT_SOURCE_DIR}/test/test_ipv6_parser.c)
