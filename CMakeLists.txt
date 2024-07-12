@@ -24,6 +24,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/utils/log.c
     ${PROJECT_SOURCE_DIR}/source/utils/binarie.c
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
+    ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
 )
 
 
@@ -45,6 +46,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-udp-parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
     target_link_libraries(test-udp-parser PRIVATE cschc)
     add_test(NAME test-udp-parser COMMAND $<TARGET_FILE:test-udp-parser>)
+
+    # - Matching Operators
+    add_executable(test-matching-operators ${PROJECT_SOURCE_DIR}/test/test_matching_operators.c)
+    target_link_libraries(test-matching-operators PRIVATE cschc)
+    add_test(NAME test-matching-operators COMMAND $<TARGET_FILE:test-matching-operators>)
 endif()
 
 
