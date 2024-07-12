@@ -1,6 +1,6 @@
 #include "core/actions.h"
 #include "core/matching_operators.h"
-#include "utils/binarie.h"
+#include "utils/binary.h"
 
 #include <string.h>
 

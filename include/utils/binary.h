@@ -1,5 +1,5 @@
-#ifndef _BINARIE_H_
-#define _BINARIE_H_
+#ifndef _BINARY_H_
+#define _BINARY_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -8,4 +8,4 @@
 
 size_t right_shift(uint8_t* buffer, size_t buffer_byte_len, int shift_amount);
 
-#endif  // _BINARIE_H_
+#endif  // _BINARY_H_

@@ -1,4 +1,4 @@
-#include "utils/binarie.h"
+#include "utils/binary.h"
 
 #include <string.h>
 

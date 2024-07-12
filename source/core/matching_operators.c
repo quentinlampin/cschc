@@ -1,5 +1,5 @@
 #include "core/matching_operators.h"
-#include "utils/binarie.h"
+#include "utils/binary.h"
 #include "utils/log.h"
 
 #include <stdio.h>

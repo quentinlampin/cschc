@@ -22,7 +22,7 @@ include_directories(
 
 add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/utils/log.c
-    ${PROJECT_SOURCE_DIR}/source/utils/binarie.c
+    ${PROJECT_SOURCE_DIR}/source/utils/binary.c
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
