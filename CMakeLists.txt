@@ -25,6 +25,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/utils/binarie.c
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
+    ${PROJECT_SOURCE_DIR}/source/core/actions.c
 )
 
 
@@ -51,6 +52,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-matching-operators ${PROJECT_SOURCE_DIR}/test/test_matching_operators.c)
     target_link_libraries(test-matching-operators PRIVATE cschc)
     add_test(NAME test-matching-operators COMMAND $<TARGET_FILE:test-matching-operators>)
+
+    # - Compression Decompression Actions
+    add_executable(test-comp-decomp-actions ${PROJECT_SOURCE_DIR}/test/test_actions.c)
+    target_link_libraries(test-comp-decomp-actions PRIVATE cschc)
+    add_test(NAME test-comp-decomp-actions COMMAND $<TARGET_FILE:test-comp-decomp-actions>)
 endif()
 
 
