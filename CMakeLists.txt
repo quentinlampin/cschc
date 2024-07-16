@@ -26,6 +26,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
+    ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
 )
 
 
@@ -57,6 +58,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-comp-decomp-actions ${PROJECT_SOURCE_DIR}/test/test_actions.c)
     target_link_libraries(test-comp-decomp-actions PRIVATE cschc)
     add_test(NAME test-comp-decomp-actions COMMAND $<TARGET_FILE:test-comp-decomp-actions>)
+
+    # Rule Field Descriptor
+    add_executable(test-rule-field-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_field_descriptor.c)
+    target_link_libraries(test-rule-field-descriptor PRIVATE cschc)
+    add_test(NAME test-rule-field-descriptor COMMAND $<TARGET_FILE:test-rule-field-descriptor>)
 endif()
 
 
