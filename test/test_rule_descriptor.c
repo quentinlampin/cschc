@@ -1,31 +1,12 @@
-#include "core/rule_field_descriptor.h"
+#include "core/rule_descriptor.h"
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-void test_unpacking_dir_mo_cda(void) {
-  direction_t                        dir;
-  matching_operator_t                mo;
-  compression_decompression_action_t cda;
-  uint8_t                            packed_value;
-
-  packed_value = 0b10000000;
-  unpack_dir_mo_cda(&dir, &mo, &cda, packed_value);
-  assert(dir == DIR_UP && mo == MO_EQUAL && cda == CDA_NOT_SENT);
-
-  packed_value = 0b01001100;
-  unpack_dir_mo_cda(&dir, &mo, &cda, packed_value);
-  assert(dir == DIR_BI && mo == MO_IGNORE && cda == CDA_COMPUTE);
-
-  packed_value = 0b00111000;
-  unpack_dir_mo_cda(&dir, &mo, &cda, packed_value);
-  assert(dir == DIR_DW && mo == MO_MATCH_MAPPING && cda == CDA_NOT_SENT);
-}
-
 /* ********************************************************************** */
 
-void test_get_rule_field_desc_info(void) {
+void test_get_rule_desc_info(void) {
   const uint8_t ctx_example[] = {
       // Context
       0, 2, 0, 6, 0, 33,  // 2 Rules
@@ -71,50 +52,26 @@ void test_get_rule_field_desc_info(void) {
 
   const size_t ctx_len = sizeof(ctx_example);
 
-  rule_field_desc_t rule_field_desc;
-  int               offset;
+  rule_desc_t rule_desc;
+  int         offset;
 
-  offset = get_rule_field_desc_info(&rule_field_desc, 36, ctx_example, ctx_len);
-  assert(offset == 44);  // first tv_offset
-  assert(rule_field_desc.fid == 0x13cc);
-  assert(rule_field_desc.len == 4);
-  assert(rule_field_desc.pos == 1);
-  assert(rule_field_desc.dir == DIR_BI);
-  assert(rule_field_desc.mo == MO_EQUAL);
-  assert(rule_field_desc.cda == CDA_NOT_SENT);
-  assert(rule_field_desc.msb_len ==
-         0);  // useless cause never use in this case but check if properly set
-  // to 0 anyway
-  assert(rule_field_desc.card_target_value == 1);
+  offset = get_rule_desc_info(&rule_desc, 6, ctx_example, ctx_len);
+  assert(offset == 9);  // first rule_field_desc_offset
+  assert(rule_desc.id == 0);
+  assert(rule_desc.nature == NATURE_COMPRESSION);
+  assert(rule_desc.card_rule_field_desc == 12);
 
-  offset = get_rule_field_desc_info(&rule_field_desc, 46, ctx_example, ctx_len);
-  assert(offset == 56);  // first tv_offset
-  assert(rule_field_desc.fid == 0x13c9);
-  assert(rule_field_desc.len == 8);
-  assert(rule_field_desc.pos == 1);
-  assert(rule_field_desc.dir == DIR_BI);
-  assert(rule_field_desc.mo == MO_MSB);
-  assert(rule_field_desc.cda == CDA_LSB);
-  assert(rule_field_desc.msb_len == 4);
-  assert(rule_field_desc.card_target_value == 1);
-
-  offset = get_rule_field_desc_info(&rule_field_desc, 70, ctx_example, ctx_len);
-  assert(offset == 78);  // no tv so it indicates the next rule_field_desc
-  assert(rule_field_desc.fid == 0x13c8);
-  assert(rule_field_desc.len == 16);
-  assert(rule_field_desc.pos == 1);
-  assert(rule_field_desc.dir == DIR_BI);
-  assert(rule_field_desc.mo == MO_IGNORE);
-  assert(rule_field_desc.cda == CDA_COMPUTE);
-  assert(rule_field_desc.msb_len == 0);
-  assert(rule_field_desc.card_target_value == 0);
+  offset = get_rule_desc_info(&rule_desc, 33, ctx_example, ctx_len);
+  assert(offset == 36);  // first rule_field_desc
+  assert(rule_desc.id == 1);
+  assert(rule_desc.nature == NATURE_NO_COMPRESSION);
+  assert(rule_desc.card_rule_field_desc == 0);
 }
 
 /* ********************************************************************** */
 
 int main(void) {
-  test_unpacking_dir_mo_cda();
-  test_get_rule_field_desc_info();
+  test_get_rule_desc_info();
 
   printf("All tests passed!\n");
 
