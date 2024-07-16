@@ -27,6 +27,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
     ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
+    ${PROJECT_SOURCE_DIR}/source/core/rule_descriptor.c
 )
 
 
@@ -63,6 +64,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-rule-field-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_field_descriptor.c)
     target_link_libraries(test-rule-field-descriptor PRIVATE cschc)
     add_test(NAME test-rule-field-descriptor COMMAND $<TARGET_FILE:test-rule-field-descriptor>)
+
+    # Rule Descriptor
+    add_executable(test-rule-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_descriptor.c)
+    target_link_libraries(test-rule-descriptor PRIVATE cschc)
+    add_test(NAME test-rule-descriptor COMMAND $<TARGET_FILE:test-rule-descriptor>)
 endif()
 
 
