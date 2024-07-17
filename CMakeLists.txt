@@ -23,7 +23,10 @@ include_directories(
 add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/utils/log.c
     ${PROJECT_SOURCE_DIR}/source/utils/binary.c
-    ${PROJECT_SOURCE_DIR}/source/parser/parser.c
+
+    ${PROJECT_SOURCE_DIR}/source/parser/protocol/ipv6.c
+    ${PROJECT_SOURCE_DIR}/source/parser/protocol/udp.c
+
     ${PROJECT_SOURCE_DIR}/source/parser/yang_handler.c
 
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
