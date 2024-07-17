@@ -1,6 +1,7 @@
 #ifndef _IPV6_H_
 #define _IPV6_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 /**
@@ -74,5 +75,22 @@ typedef struct {
   uint8_t source_address[IPV6_SRC_ADDRESS_BYTE_LENGTH];
   uint8_t destination_address[IPV6_DST_ADDRESS_BYTE_LENGTH];
 } ipv6_hdr_t;
+
+/**
+ * @brief Parses a network packet as an IPv6 header.
+ *
+ * @param ipv6_hdr Pointer to the IPv6 header structure to fill.
+ * @param packet The packet data.
+ * @param packet_len The packet data length.
+ * @return The offset of the next header in the packet, or -1 if an error
+ * occurs.
+ *
+ * @details This function consideres the IPv6 header from the beginning of the
+ * packet, i.e offset is 0.
+ */
+int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, const uint8_t* packet,
+                      const size_t packet_len);
+
+uint8_t* get_ipv6_field(ipv6_hdr_t* ipv6_hdr, const uint16_t fid);
 
 #endif  // _IPV6_H_

@@ -1,6 +1,7 @@
 #ifndef _UDP_H_
 #define _UDP_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 /**
@@ -38,5 +39,20 @@ typedef struct {
   uint8_t length[UDP_LENGTH_BYTE_LENGTH];
   uint8_t checksum[UDP_CHECKSUM_BYTE_LENGTH];
 } udp_hdr_t;
+
+/**
+ * @brief Parses a network packet as a UDP header.
+ *
+ * @param udp_hdr Pointer to the UDP header structure to fill.
+ * @param packet The packet data.
+ * @param offset The offset to the start of the UDP header in the packet.
+ * @param packet_len The length of the packet data.
+ * @return The offset of the next header in the packet, or -1 if an error
+ * occurs.
+ */
+int parse_udp_header(udp_hdr_t* udp_hdr, const uint8_t* packet, int offset,
+                     const size_t packet_len);
+
+uint8_t* get_udp_field(udp_hdr_t* udp_hdr, const uint16_t fid);
 
 #endif  // _UDP_H_

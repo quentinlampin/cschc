@@ -1,4 +1,4 @@
-#include "parser/parser.h"
+#include "parser/protocol/ipv6.h"
 
 #include <string.h>
 
@@ -26,14 +26,30 @@ int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, const uint8_t* packet,
 
 /* ********************************************************************** */
 
-int parse_udp_header(udp_hdr_t* udp_hdr, const uint8_t* packet, int offset,
-                     const size_t packet_len) {
-  if (packet_len < offset + UDP_HDR_BYTE_LENGTH) {
-    return -1;
+uint8_t* get_ipv6_field(ipv6_hdr_t* ipv6_hdr, const uint16_t fid) {
+  switch (fid) {
+    case FID_IPV6_TRAFFIC_CLASS:
+      return ipv6_hdr->traffic_class;
+
+    case FID_IPV6_FLOW_LABEL:
+      return ipv6_hdr->flow_label;
+
+    case FID_IPV6_PAYLOAD_LENGTH:
+      return ipv6_hdr->payload_length;
+
+    case FID_IPV6_NEXT_HEADER:
+      return ipv6_hdr->next_header;
+
+    case FID_IPV6_HOP_LIMIT:
+      return ipv6_hdr->hop_limit;
+
+    case FID_IPV6_SRC_ADDRESS:
+      return ipv6_hdr->source_address;
+
+    case FID_IPV6_DST_ADDRESS:
+      return ipv6_hdr->destination_address;
+
+    default:  // FID_IPV6_VERSION
+      return ipv6_hdr->version;
   }
-
-  // Extract all fields
-  memcpy(udp_hdr, packet + offset, UDP_HDR_BYTE_LENGTH);
-
-  return offset + UDP_HDR_BYTE_LENGTH;
 }
