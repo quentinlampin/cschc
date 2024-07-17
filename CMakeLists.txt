@@ -24,6 +24,8 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/utils/log.c
     ${PROJECT_SOURCE_DIR}/source/utils/binary.c
     ${PROJECT_SOURCE_DIR}/source/parser/parser.c
+    ${PROJECT_SOURCE_DIR}/source/parser/yang_handler.c
+
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
     ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
@@ -69,6 +71,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-rule-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_descriptor.c)
     target_link_libraries(test-rule-descriptor PRIVATE cschc)
     add_test(NAME test-rule-descriptor COMMAND $<TARGET_FILE:test-rule-descriptor>)
+    
+    # Yang handler
+    add_executable(test-yang-handler ${PROJECT_SOURCE_DIR}/test/test_yang_handler.c)
+    target_link_libraries(test-yang-handler PRIVATE cschc)
+    add_test(NAME test-yang-handler COMMAND $<TARGET_FILE:test-yang-handler>)
 endif()
 
 
