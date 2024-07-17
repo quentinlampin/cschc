@@ -12,10 +12,10 @@ void test_get_fid_by_protocol_and_offset(void) {
   assert(get_fid_by_protocol_and_offset(PROTOCOL_IPV6, 2) ==
          5061);  // IPv6 Flow Label
 
-  assert(get_fid_by_protocol_and_offset(PROTOCOL_IPV6, 5) ==
+  assert(get_fid_by_protocol_and_offset(PROTOCOL_IPV6, 8) ==
          5062);  // IPv6 Hop Limit
 
-  assert(get_fid_by_protocol_and_offset(PROTOCOL_UDP, 5) == 0);  // Nothing
+  assert(get_fid_by_protocol_and_offset(PROTOCOL_UDP, 9) == 0);  // Nothing
 }
 
 /* ********************************************************************** */
@@ -30,12 +30,12 @@ void test_get_protocol_and_offset_by_fid(void) {
   assert(
       get_protocol_and_offset_by_fid(&proto, &offset, 5073));  // UDP Dev Port
   assert(proto == PROTOCOL_UDP);
-  assert(offset == 1);
+  assert(offset == 2);
 
   assert(
       get_protocol_and_offset_by_fid(&proto, &offset, 5062));  // IPv6 Hop Limit
   assert(proto == PROTOCOL_IPV6);
-  assert(offset == 5);
+  assert(offset == 8);
 }
 
 /* ********************************************************************** */

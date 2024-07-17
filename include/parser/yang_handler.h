@@ -20,6 +20,7 @@ typedef enum {
 typedef struct {
   protocol_t protocol;
   int        offset;
+  uint8_t    byte_length;
   uint16_t   fid;
 } field_fid_mapping_t;
 
@@ -28,26 +29,32 @@ typedef struct {
  */
 static const field_fid_mapping_t field_fid_mappings[] = {
   // IPv6 mappings
-    {PROTOCOL_IPV6, 0 /*offsetof(ipv6_hdr_t, version)*/,             FID_IPV6_VERSION  },
-    {PROTOCOL_IPV6, 1 /*offsetof(ipv6_hdr_t, traffic_class)*/,
-     FID_IPV6_TRAFFIC_CLASS                                                            },
-    {PROTOCOL_IPV6, 2 /*offsetof(ipv6_hdr_t, flow_label)*/,
-     FID_IPV6_FLOW_LABEL                                                               },
-    {PROTOCOL_IPV6, 3 /*offsetof(ipv6_hdr_t, payload_length)*/,
-     FID_IPV6_PAYLOAD_LENGTH                                                           },
-    {PROTOCOL_IPV6, 4 /*offsetof(ipv6_hdr_t, next_header)*/,
-     FID_IPV6_NEXT_HEADER                                                              },
-    {PROTOCOL_IPV6, 5 /*offsetof(ipv6_hdr_t, hop_limit)*/,           FID_IPV6_HOP_LIMIT},
-    {PROTOCOL_IPV6, 6 /*offsetof(ipv6_hdr_t, source_address)*/,
-     FID_IPV6_SRC_ADDRESS                                                              },
-    {PROTOCOL_IPV6, 7 /*offsetof(ipv6_hdr_t, destination_address)*/,
-     FID_IPV6_DST_ADDRESS                                                              },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, version),             IPV6_VERSION_BYTE_LENGTH,
+     FID_IPV6_VERSION                                                                                             },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, traffic_class),
+     IPV6_TRAFFIC_CLASS_BYTE_LENGTH,                                                       FID_IPV6_TRAFFIC_CLASS },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, flow_label),
+     IPV6_FLOW_LABEL_BYTE_LENGTH,                                                          FID_IPV6_FLOW_LABEL    },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, payload_length),
+     IPV6_PAYLOAD_LENGTH_BYTE_LENGTH,                                                      FID_IPV6_PAYLOAD_LENGTH},
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, next_header),
+     IPV6_NEXT_HEADER_BYTE_LENGTH,                                                         FID_IPV6_NEXT_HEADER   },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, hop_limit),           IPV6_HOP_LIMIT_BYTE_LENGTH,
+     FID_IPV6_HOP_LIMIT                                                                                           },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, source_address),
+     IPV6_SRC_ADDRESS_BYTE_LENGTH,                                                         FID_IPV6_SRC_ADDRESS   },
+    {PROTOCOL_IPV6, offsetof(ipv6_hdr_t, destination_address),
+     IPV6_DST_ADDRESS_BYTE_LENGTH,                                                         FID_IPV6_DST_ADDRESS   },
 
  // UDP mappings
-    {PROTOCOL_UDP,  0 /*offsetof(udp_hdr_t,  app_port)*/,            FID_UDP_APP_PORT  },
-    {PROTOCOL_UDP,  1 /*offsetof(udp_hdr_t,  dev_port)*/,            FID_UDP_DEV_PORT  },
-    {PROTOCOL_UDP,  2 /*offsetof(udp_hdr_t,  length)*/,              FID_UDP_LENGTH    },
-    {PROTOCOL_UDP,  3 /*offsetof(udp_hdr_t,  checksum)*/,            FID_UDP_CHECKSUM  },
+    {PROTOCOL_UDP,  offsetof(udp_hdr_t,  app_port),            UDP_APP_PORT_BYTE_LENGTH,
+     FID_UDP_APP_PORT                                                                                             },
+    {PROTOCOL_UDP,  offsetof(udp_hdr_t,  dev_port),            UDP_DEV_PORT_BYTE_LENGTH,
+     FID_UDP_DEV_PORT                                                                                             },
+    {PROTOCOL_UDP,  offsetof(udp_hdr_t,  length),              UDP_LENGTH_BYTE_LENGTH,
+     FID_UDP_LENGTH                                                                                               },
+    {PROTOCOL_UDP,  offsetof(udp_hdr_t,  checksum),            UDP_CHECKSUM_BYTE_LENGTH,
+     FID_UDP_CHECKSUM                                                                                             },
 };
 
 /**
