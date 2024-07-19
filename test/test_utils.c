@@ -88,9 +88,23 @@ void test_add_bits_to_buffer(void) {
   assert(!add_bits_to_buffer(buffer, content1, 4, &bit_pos, buffer_byte_len));
 }
 
+/* ********************************************************************** */
+
+void test_bits_counter(void) {
+  assert(bits_counter(1) == 1);
+  assert(bits_counter(2) == 2);
+  assert(bits_counter(3) == 2);
+  assert(bits_counter(7) == 3);
+  assert(bits_counter(255) == 8);
+  assert(bits_counter(2040) == 11);
+}
+
+/* ********************************************************************** */
+
 int main(void) {
   test_right_shift();
   test_add_bits_to_buffer();
+  test_bits_counter();
 
   printf("All tests passed!\n");
 
