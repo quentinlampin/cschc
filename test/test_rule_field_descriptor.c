@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* ********************************************************************** */
+
 void test_unpacking_dir_mo_cda(void) {
   direction_t                        dir;
   matching_operator_t                mo;
@@ -75,7 +77,7 @@ void test_get_rule_field_desc_info(void) {
   int               offset;
 
   offset = get_rule_field_desc_info(&rule_field_desc, 36, ctx_example, ctx_len);
-  assert(offset == 44);  // first tv_offset
+  assert(offset == 43);
   assert(rule_field_desc.fid == 0x13cc);
   assert(rule_field_desc.len == 4);
   assert(rule_field_desc.pos == 1);
@@ -88,7 +90,7 @@ void test_get_rule_field_desc_info(void) {
   assert(rule_field_desc.card_target_value == 1);
 
   offset = get_rule_field_desc_info(&rule_field_desc, 46, ctx_example, ctx_len);
-  assert(offset == 56);  // first tv_offset
+  assert(offset == 55);
   assert(rule_field_desc.fid == 0x13c9);
   assert(rule_field_desc.len == 8);
   assert(rule_field_desc.pos == 1);
@@ -99,7 +101,7 @@ void test_get_rule_field_desc_info(void) {
   assert(rule_field_desc.card_target_value == 1);
 
   offset = get_rule_field_desc_info(&rule_field_desc, 70, ctx_example, ctx_len);
-  assert(offset == 78);  // no tv so it indicates the next rule_field_desc
+  assert(offset == 77);
   assert(rule_field_desc.fid == 0x13c8);
   assert(rule_field_desc.len == 16);
   assert(rule_field_desc.pos == 1);

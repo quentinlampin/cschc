@@ -45,7 +45,7 @@ int get_rule_field_desc_info(rule_field_desc_t *rule_field_desc, int offset,
     rule_field_desc->msb_len = 0;
   }
 
-  rule_field_desc->card_target_value = context[offset++];
+  rule_field_desc->card_target_value = context[offset];
 
   return offset;
 }
