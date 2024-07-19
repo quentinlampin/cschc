@@ -77,6 +77,17 @@ int add_bits_to_buffer(uint8_t* buffer, const uint8_t* content,
 
 /* ********************************************************************** */
 
+int bits_counter(int value) {
+  int count = 0;
+  while (value) {
+    count++;
+    value >>= 1;
+  }
+  return count;
+}
+
+/* ********************************************************************** */
+
 static int __add_byte_to_buffer(uint8_t* buffer, const uint8_t content,
                                 const size_t content_len, int* bit_pos,
                                 size_t buffer_byte_len) {

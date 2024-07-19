@@ -12,4 +12,6 @@ int add_bits_to_buffer(uint8_t* buffer, const uint8_t* content,
                        const size_t content_len, int* bit_pos,
                        size_t buffer_byte_len);
 
+int bits_counter(int value);
+
 #endif  // _BINARY_H_
