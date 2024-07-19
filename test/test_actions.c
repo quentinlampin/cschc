@@ -92,11 +92,11 @@ void test_CDA_mapping_sent(void) {
   assert(memcmp(residue, residue_expected2, 1) == 0);
 
   // field3 in RuleFieldDesc3
-  assert(CDA_mapping_sent(residue, field3, 8, 29, ctx_example, ctx_len));
+  assert(CDA_mapping_sent(residue, field3, 20, 29, ctx_example, ctx_len));
   assert(memcmp(residue, residue_expected3, 1) == 0);
 
   // field4 in RuleFieldDesc3
-  assert(CDA_mapping_sent(residue, field4, 8, 29, ctx_example, ctx_len));
+  assert(CDA_mapping_sent(residue, field4, 20, 29, ctx_example, ctx_len));
   assert(memcmp(residue, residue_expected4, 1) == 0);
 }
 
