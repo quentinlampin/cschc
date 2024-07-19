@@ -11,6 +11,7 @@ typedef enum {
 } nature_t;
 
 typedef struct {
+  uint16_t offset;
   uint8_t  id;
   nature_t nature;
   uint8_t  card_rule_field_desc;

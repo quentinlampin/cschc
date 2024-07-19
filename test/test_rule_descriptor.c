@@ -53,16 +53,18 @@ void test_get_rule_desc_info(void) {
   const size_t ctx_len = sizeof(ctx_example);
 
   rule_desc_t rule_desc;
-  int         offset;
+  int         next_offset;
 
-  offset = get_rule_desc_info(&rule_desc, 6, ctx_example, ctx_len);
-  assert(offset == 9);  // first rule_field_desc_offset
+  next_offset = get_rule_desc_info(&rule_desc, 6, ctx_example, ctx_len);
+  assert(next_offset == 9);  // first rule_field_desc_offset
+  assert(rule_desc.offset == 6);
   assert(rule_desc.id == 0);
   assert(rule_desc.nature == NATURE_COMPRESSION);
   assert(rule_desc.card_rule_field_desc == 12);
 
-  offset = get_rule_desc_info(&rule_desc, 33, ctx_example, ctx_len);
-  assert(offset == 36);  // first rule_field_desc
+  next_offset = get_rule_desc_info(&rule_desc, 33, ctx_example, ctx_len);
+  assert(next_offset == 36);  // first rule_field_desc_offset
+  assert(rule_desc.offset == 33);
   assert(rule_desc.id == 1);
   assert(rule_desc.nature == NATURE_NO_COMPRESSION);
   assert(rule_desc.card_rule_field_desc == 0);
