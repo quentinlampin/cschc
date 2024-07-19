@@ -8,4 +8,8 @@
 
 size_t right_shift(uint8_t* buffer, size_t buffer_byte_len, int shift_amount);
 
+int add_bits_to_buffer(uint8_t* buffer, const uint8_t* content,
+                       const size_t content_len, int* bit_pos,
+                       size_t buffer_byte_len);
+
 #endif  // _BINARY_H_
