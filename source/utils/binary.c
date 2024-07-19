@@ -77,12 +77,18 @@ int add_bits_to_buffer(uint8_t* buffer, const uint8_t* content,
 
 /* ********************************************************************** */
 
-int bits_counter(int value) {
-  int count = 0;
+int bits_counter(uint8_t value) {
+  if (value == 0x00) {
+    return 1;
+  }
+  int count;
+
+  count = 0;
   while (value) {
     count++;
     value >>= 1;
   }
+
   return count;
 }
 

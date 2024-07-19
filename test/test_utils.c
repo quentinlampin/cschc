@@ -91,12 +91,12 @@ void test_add_bits_to_buffer(void) {
 /* ********************************************************************** */
 
 void test_bits_counter(void) {
-  assert(bits_counter(1) == 1);
-  assert(bits_counter(2) == 2);
-  assert(bits_counter(3) == 2);
-  assert(bits_counter(7) == 3);
-  assert(bits_counter(255) == 8);
-  assert(bits_counter(2040) == 11);
+  assert(bits_counter(0x00) == 1);
+  assert(bits_counter(0x01) == 1);
+  assert(bits_counter(0x02) == 2);
+  assert(bits_counter(0x03) == 2);
+  assert(bits_counter(0x07) == 3);
+  assert(bits_counter(0xff) == 8);
 }
 
 /* ********************************************************************** */
