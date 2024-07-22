@@ -26,6 +26,7 @@ add_library(cschc
 
     ${PROJECT_SOURCE_DIR}/source/parser/protocol/ipv6.c
     ${PROJECT_SOURCE_DIR}/source/parser/protocol/udp.c
+    ${PROJECT_SOURCE_DIR}/source/parser/parser.c
 
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
@@ -53,6 +54,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-udp-parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
     target_link_libraries(test-udp-parser PRIVATE cschc)
     add_test(NAME test-udp-parser COMMAND $<TARGET_FILE:test-udp-parser>)
+
+    # - Header parser
+    add_executable(test-parser ${PROJECT_SOURCE_DIR}/test/test_parser.c)
+    target_link_libraries(test-parser PRIVATE cschc)
+    add_test(NAME test-parser COMMAND $<TARGET_FILE:test-parser>)
 
     # - Matching Operators
     add_executable(test-matching-operators ${PROJECT_SOURCE_DIR}/test/test_matching_operators.c)
