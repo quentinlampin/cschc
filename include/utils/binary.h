@@ -6,11 +6,16 @@
 
 #define BYTE_LENGTH(x) (((x) % 8 == 0) ? (x) / 8 : 1 + (x) / 8)
 
-size_t right_shift(uint8_t* buffer, size_t buffer_byte_len, int shift_amount);
+size_t right_shift(uint8_t* buffer, const size_t buffer_byte_len,
+                   int shift_amount);
 
-int add_bits_to_buffer(uint8_t* buffer, const uint8_t* content,
-                       const size_t content_len, int* bit_pos,
-                       size_t buffer_byte_len);
+int add_byte_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
+                       int* bit_position, const uint8_t content,
+                       const size_t content_len);
+
+int add_bits_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
+                       int* bit_position, const uint8_t* content,
+                       const size_t content_len);
 
 int bits_counter(uint8_t value);
 

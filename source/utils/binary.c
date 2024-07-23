@@ -4,16 +4,11 @@
 
 /* ********************************************************************** */
 
-static int __add_byte_to_buffer(uint8_t* buffer, const uint8_t content,
-                                const size_t content_len, int* bit_pos,
-                                size_t buffer_byte_len);
-
-/* ********************************************************************** */
-
-size_t right_shift(uint8_t* buffer, size_t buffer_byte_len, int shift_amount) {
+size_t right_shift(uint8_t* buffer, const size_t buffer_byte_len,
+                   int shift_amount) {
   if (shift_amount <= 0 || buffer_byte_len == 0 ||
       shift_amount > buffer_byte_len * 8) {
-    return -1;
+    return 0;
   }
 
   int    byte_to_remove;
@@ -47,32 +42,74 @@ size_t right_shift(uint8_t* buffer, size_t buffer_byte_len, int shift_amount) {
 
 /* ********************************************************************** */
 
-int add_bits_to_buffer(uint8_t* buffer, const uint8_t* content,
-                       const size_t content_len, int* bit_pos,
-                       size_t buffer_byte_len) {
-  if (BYTE_LENGTH(*bit_pos + content_len) > buffer_byte_len) {
-    return 0;
+int add_byte_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
+                       int* bit_position, const uint8_t content,
+                       const size_t content_len) {
+  int status;
+  int byte_pos;
+  int bit_offset;
+  int remaining_bits;
+
+  status = (content_len > 8 ||
+            BYTE_LENGTH(*bit_position + content_len) > buffer_byte_len)
+               ? 0
+               : 1;
+
+  if (!status) {
+    return status;
   }
 
+  byte_pos   = *bit_position / 8;
+  bit_offset = *bit_position % 8;
+
+  if (bit_offset + content_len <= 8) {
+    buffer[byte_pos] |= (content << (8 - bit_offset - content_len));
+  } else {
+    // fill partially the current byte with (8 - bit_offset) bits
+    buffer[byte_pos] |= (content >> (content_len - (8 - bit_offset)));
+
+    // fill the remainin part of content in the following byte
+    remaining_bits = content_len - (8 - bit_offset);
+    buffer[++byte_pos] |= (content << (8 - remaining_bits));
+  }
+
+  *bit_position += content_len;
+
+  return status;
+}
+
+/* ********************************************************************** */
+
+int add_bits_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
+                       int* bit_position, const uint8_t* content,
+                       const size_t content_len) {
+  int status;
   int content_ind;
   int len_remainder;
   int content_byte_len;
+
+  status = (BYTE_LENGTH(*bit_position + content_len) > buffer_byte_len) ? 0 : 1;
+
+  if (!status) {
+    return status;
+  }
 
   content_ind      = 0;
   len_remainder    = content_len % 8;
   content_byte_len = content_len / 8;
 
   if (len_remainder > 0) {
-    __add_byte_to_buffer(buffer, content[content_ind++], len_remainder, bit_pos,
-                         buffer_byte_len);
+    status = add_byte_to_buffer(buffer, buffer_byte_len, bit_position,
+                                content[content_ind++], len_remainder);
   }
 
-  while (content_ind <= content_byte_len) {
-    __add_byte_to_buffer(buffer, content[content_ind++], 8, bit_pos,
-                         buffer_byte_len);
+  while (status && ((len_remainder > 0 && content_ind <= content_byte_len) ||
+                    (content_ind < content_byte_len))) {
+    status = add_byte_to_buffer(buffer, buffer_byte_len, bit_position,
+                                content[content_ind++], 8);
   }
 
-  return 1;
+  return status;
 }
 
 /* ********************************************************************** */
@@ -90,36 +127,4 @@ int bits_counter(uint8_t value) {
   }
 
   return count;
-}
-
-/* ********************************************************************** */
-
-static int __add_byte_to_buffer(uint8_t* buffer, const uint8_t content,
-                                const size_t content_len, int* bit_pos,
-                                size_t buffer_byte_len) {
-  if (BYTE_LENGTH(*bit_pos + content_len) > buffer_byte_len) {
-    return 0;
-  }
-
-  int byte_pos;
-  int bit_offset;
-  int remaining_bits;
-
-  byte_pos   = *bit_pos / 8;
-  bit_offset = *bit_pos % 8;
-
-  if (bit_offset + content_len <= 8) {
-    buffer[byte_pos] |= (content << (8 - bit_offset - content_len));
-  } else {
-    // fill partially the current byte with (8 - bit_offset) bits
-    buffer[byte_pos] |= (content >> (content_len - (8 - bit_offset)));
-
-    // fill the remainin part of content in the following byte
-    remaining_bits = content_len - (8 - bit_offset);
-    buffer[++byte_pos] |= (content << (8 - remaining_bits));
-  }
-
-  *bit_pos += content_len;
-
-  return 1;
 }
