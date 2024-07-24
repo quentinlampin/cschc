@@ -5,45 +5,34 @@
 #include "parser/protocol/udp.h"
 
 /**
- * @brief Enumeration of supported protocols.
- */
-typedef enum {
-  PROTOCOL_IPV6,
-  PROTOCOL_UDP,
-} protocol_t;
-
-/**
- * @brief Enumeration of supported stacks.
- */
-typedef enum {
-  STACK_IPV6_UDP,
-} stack_type_t;
-
-/**
  * @brief IPv6 + UDP header structure.
  */
 typedef struct {
   ipv6_hdr_t ipv6_hdr;
   udp_hdr_t  udp_hdr;
-} ipv6_udp_hdr_t;
-
-/**
- * @brief Union of various header stacks supported.
- */
-typedef union {
-  ipv6_udp_hdr_t ipv6_udp;
+  // coap ; not implemented yet
 } header_t;
 
 /**
- * @brief Parses the header based on the specified stack type.
+ * @brief Parses the header.
  *
  * @param header Pointer to the header structure to be parsed.
- * @param stack The type of stack to parse.
+ * @param offset Pointer to the parsing offset.
  * @param packet Pointer to the packet data.
- * @param packet_len Length of the packet data.
+ * @param packet_byte_len Byte length of the packet data.
  * @return The status code, 1 for success otherwise 0.
  */
-int parse_header(header_t* header, const stack_type_t stack,
-                 const uint8_t* packet, const size_t packet_len);
+int parse_header(header_t* header, int* offset, const uint8_t* packet,
+                 const size_t packet_byte_len);
+
+/**
+ * @brief Get the header field pointer corresponding to the FID.
+ *
+ * @param field_ptr Pointer to the field.
+ * @param header Pointer to the header content.
+ * @param fid Field ID.
+ * @return The status code, 1 for success otherwise 0.
+ */
+int get_header_field(uint8_t** field_ptr, header_t* header, const uint16_t fid);
 
 #endif  // _PARSER_H_

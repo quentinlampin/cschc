@@ -4,10 +4,10 @@
 
 /* ********************************************************************** */
 
-int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, const uint8_t* packet,
-                      const size_t packet_len) {
-  if (packet_len < IPV6_HDR_BYTE_LENGTH) {
-    return -1;
+int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, int* offset, const uint8_t* packet,
+                      const size_t packet_byte_len) {
+  if (packet_byte_len < IPV6_HDR_BYTE_LENGTH || *offset != 0) {
+    return 0;
   }
 
   // Extract version (4 bits), traffic class (8 bits), and flow label (20 bits)
@@ -20,36 +20,7 @@ int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, const uint8_t* packet,
 
   // Extract other fields
   memcpy(ipv6_hdr->payload_length, packet + 4, IPV6_HDR_BYTE_LENGTH - 4);
+  *offset += IPV6_HDR_BYTE_LENGTH;
 
-  return IPV6_HDR_BYTE_LENGTH;
-}
-
-/* ********************************************************************** */
-
-uint8_t* get_ipv6_field(ipv6_hdr_t* ipv6_hdr, const uint16_t fid) {
-  switch (fid) {
-    case FID_IPV6_TRAFFIC_CLASS:
-      return ipv6_hdr->traffic_class;
-
-    case FID_IPV6_FLOW_LABEL:
-      return ipv6_hdr->flow_label;
-
-    case FID_IPV6_PAYLOAD_LENGTH:
-      return ipv6_hdr->payload_length;
-
-    case FID_IPV6_NEXT_HEADER:
-      return ipv6_hdr->next_header;
-
-    case FID_IPV6_HOP_LIMIT:
-      return ipv6_hdr->hop_limit;
-
-    case FID_IPV6_SRC_ADDRESS:
-      return ipv6_hdr->source_address;
-
-    case FID_IPV6_DST_ADDRESS:
-      return ipv6_hdr->destination_address;
-
-    default:  // FID_IPV6_VERSION
-      return ipv6_hdr->version;
-  }
+  return 1;
 }

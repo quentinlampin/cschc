@@ -2,30 +2,87 @@
 
 /* ********************************************************************** */
 
-int parse_header(header_t* header, const stack_type_t stack,
-                 const uint8_t* packet, const size_t packet_len) {
-  int parsing_offset;
+int parse_header(header_t* header, int* offset, const uint8_t* packet,
+                 const size_t packet_byte_len) {
   int parsing_status;
 
-  switch (stack) {
-    case STACK_IPV6_UDP:
-      parsing_offset =
-          parse_ipv6_header(&header->ipv6_udp.ipv6_hdr, packet, packet_len);
+  parsing_status =
+      parse_ipv6_header(&header->ipv6_hdr, offset, packet, packet_byte_len);
 
-      // Check if UDP is the next header
-      if (header->ipv6_udp.ipv6_hdr.next_header[0] == 0x11) {
-        parsing_offset = parse_udp_header(&header->ipv6_udp.udp_hdr, packet,
-                                          parsing_offset, packet_len);
-        parsing_status = 1;
-      } else {
-        parsing_status = 0;
-      }
+  if (header->ipv6_hdr.next_header[0] == 0x11) {
+    parsing_status =
+        parse_udp_header(&header->udp_hdr, offset, packet, packet_byte_len);
+  } else {
+    return 0;
+  }
+
+  // parse_coap_header : to do !
+
+  return parsing_status;
+}
+
+/* ********************************************************************** */
+
+int get_header_field(uint8_t** field_ptr, header_t* header,
+                     const uint16_t fid) {
+  int status;
+
+  status = 1;
+  switch (fid) {
+    case FID_IPV6_VERSION:
+      *field_ptr = header->ipv6_hdr.version;
       break;
 
+    case FID_IPV6_TRAFFIC_CLASS:
+      *field_ptr = header->ipv6_hdr.traffic_class;
+      break;
+
+    case FID_IPV6_FLOW_LABEL:
+      *field_ptr = header->ipv6_hdr.flow_label;
+      break;
+
+    case FID_IPV6_PAYLOAD_LENGTH:
+      *field_ptr = header->ipv6_hdr.payload_length;
+      break;
+
+    case FID_IPV6_NEXT_HEADER:
+      *field_ptr = header->ipv6_hdr.next_header;
+      break;
+
+    case FID_IPV6_HOP_LIMIT:
+      *field_ptr = header->ipv6_hdr.hop_limit;
+      break;
+
+    case FID_IPV6_SRC_ADDRESS:
+      *field_ptr = header->ipv6_hdr.source_address;
+      break;
+
+    case FID_IPV6_DST_ADDRESS:
+      *field_ptr = header->ipv6_hdr.destination_address;
+      break;
+
+    case FID_UDP_APP_PORT:
+      *field_ptr = header->udp_hdr.app_port;
+      break;
+
+    case FID_UDP_DEV_PORT:
+      *field_ptr = header->udp_hdr.dev_port;
+      break;
+
+    case FID_UDP_LENGTH:
+      *field_ptr = header->udp_hdr.length;
+      break;
+
+    case FID_UDP_CHECKSUM:
+      *field_ptr = header->udp_hdr.checksum;
+      break;
+
+      // CoAP cases : to do !
+
     default:
-      parsing_status = 0;
+      status = 0;
       break;
   }
 
-  return parsing_status;
+  return status;
 }

@@ -80,17 +80,13 @@ typedef struct {
  * @brief Parses a network packet as an IPv6 header.
  *
  * @param ipv6_hdr Pointer to the IPv6 header structure to fill.
- * @param packet The packet data.
- * @param packet_len The packet data length.
- * @return The offset of the next header in the packet, or -1 if an error
- * occurs.
- *
- * @details This function consideres the IPv6 header from the beginning of the
- * packet, i.e offset is 0.
+ * @param offset Pointer to the offset to the start of the IPv6 header in the
+ * packet.
+ * @param packet Pointer to the packet data.
+ * @param packet_byte_len Byte length of the packet data.
+ * @return The status code, 1 for success otherwise 0.
  */
-int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, const uint8_t* packet,
-                      const size_t packet_len);
-
-uint8_t* get_ipv6_field(ipv6_hdr_t* ipv6_hdr, const uint16_t fid);
+int parse_ipv6_header(ipv6_hdr_t* ipv6_hdr, int* offset, const uint8_t* packet,
+                      const size_t packet_byte_len);
 
 #endif  // _IPV6_H_

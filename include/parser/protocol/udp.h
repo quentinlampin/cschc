@@ -44,15 +44,13 @@ typedef struct {
  * @brief Parses a network packet as a UDP header.
  *
  * @param udp_hdr Pointer to the UDP header structure to fill.
- * @param packet The packet data.
- * @param offset The offset to the start of the UDP header in the packet.
- * @param packet_len The length of the packet data.
- * @return The offset of the next header in the packet, or -1 if an error
- * occurs.
+ * @param offset Pointer to the offset to the start of the UDP header in the
+ * packet.
+ * @param packet Pointer to the packet data.
+ * @param packet_byte_len Byte length of the packet data.
+ * @return The status code, 1 for success otherwise 0.
  */
-int parse_udp_header(udp_hdr_t* udp_hdr, const uint8_t* packet, int offset,
-                     const size_t packet_len);
-
-uint8_t* get_udp_field(udp_hdr_t* udp_hdr, const uint16_t fid);
+int parse_udp_header(udp_hdr_t* udp_hdr, int* offset, const uint8_t* packet,
+                     const size_t packet_byte_len);
 
 #endif  // _UDP_H_
