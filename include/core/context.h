@@ -47,8 +47,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-int get_rule_field_desc_offset_from_fid(int *offset, const uint16_t fid,
-                                        const uint8_t *context,
-                                        const size_t   context_len);
+int get_rule_field_desc_offset(int *offset, const rule_desc_t *rule_desc,
+                               const int ind_factor, const uint8_t *context,
+                               const size_t context_byte_len);
+
+// To do
+int compression_rule_selection(void);
 
 #endif  // _CONTEXT_H_
