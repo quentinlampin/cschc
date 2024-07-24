@@ -55,58 +55,57 @@ void test_ipv6_udp_parser_header(void) {
   const uint8_t udp_expected_checksum[] = {0x00, 0x00};
 
   header_t hdr;
-  assert(parse_header(&hdr, STACK_IPV6_UDP, ipv6_udp_packet, 48));
+  int      offset = 0;
+  assert(parse_header(&hdr, &offset, ipv6_udp_packet, 48));
+  assert(offset == 48);
 
   // IPv6 Version
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.version, ipv6_expected_version,
+  assert(memcmp(hdr.ipv6_hdr.version, ipv6_expected_version,
                 IPV6_VERSION_BYTE_LENGTH) == 0);
 
   // IPv6 Traffic Class
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.traffic_class,
-                ipv6_expected_traffic_class,
+  assert(memcmp(hdr.ipv6_hdr.traffic_class, ipv6_expected_traffic_class,
                 IPV6_TRAFFIC_CLASS_BYTE_LENGTH) == 0);
 
   // IPv6 Flow Label
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.flow_label, ipv6_expected_flow_label,
+  assert(memcmp(hdr.ipv6_hdr.flow_label, ipv6_expected_flow_label,
                 IPV6_FLOW_LABEL_BYTE_LENGTH) == 0);
 
   // IPv6 Payload Length
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.payload_length,
-                ipv6_expected_payload_length,
+  assert(memcmp(hdr.ipv6_hdr.payload_length, ipv6_expected_payload_length,
                 IPV6_PAYLOAD_LENGTH_BYTE_LENGTH) == 0);
 
   // IPv6 Next Header
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.next_header, ipv6_expected_next_header,
+  assert(memcmp(hdr.ipv6_hdr.next_header, ipv6_expected_next_header,
                 IPV6_NEXT_HEADER_BYTE_LENGTH) == 0);
 
   // IPv6 Hop Limit
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.hop_limit, ipv6_expected_hop_limit,
+  assert(memcmp(hdr.ipv6_hdr.hop_limit, ipv6_expected_hop_limit,
                 IPV6_HOP_LIMIT_BYTE_LENGTH) == 0);
 
   // IPv6 Source Address
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.source_address,
-                ipv6_expected_source_address,
+  assert(memcmp(hdr.ipv6_hdr.source_address, ipv6_expected_source_address,
                 IPV6_SRC_ADDRESS_BYTE_LENGTH) == 0);
 
   // IPv6 Destination Address
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.destination_address,
+  assert(memcmp(hdr.ipv6_hdr.destination_address,
                 ipv6_expected_destination_address,
                 IPV6_DST_ADDRESS_BYTE_LENGTH) == 0);
 
   // UDP App Port
-  assert(memcmp(hdr.ipv6_udp.udp_hdr.app_port, udp_expected_app_port,
+  assert(memcmp(hdr.udp_hdr.app_port, udp_expected_app_port,
                 UDP_APP_PORT_BYTE_LENGTH) == 0);
 
   // UDP Dev Port
-  assert(memcmp(hdr.ipv6_udp.udp_hdr.dev_port, udp_expected_dev_port,
+  assert(memcmp(hdr.udp_hdr.dev_port, udp_expected_dev_port,
                 UDP_DEV_PORT_BYTE_LENGTH) == 0);
 
   // UDP Length
-  assert(memcmp(hdr.ipv6_udp.udp_hdr.length, udp_expected_length,
+  assert(memcmp(hdr.udp_hdr.length, udp_expected_length,
                 UDP_LENGTH_BYTE_LENGTH) == 0);
 
   // UDP Checksum
-  assert(memcmp(hdr.ipv6_udp.udp_hdr.checksum, udp_expected_checksum,
+  assert(memcmp(hdr.udp_hdr.checksum, udp_expected_checksum,
                 UDP_CHECKSUM_BYTE_LENGTH) == 0);
 }
 
@@ -141,41 +140,39 @@ void test_ipv6_udp_parser_header_wrong_next_header_field(void) {
       0x02, 0x00, 0x5e, 0xff, 0xfe, 0x00, 0x00, 0x02};
 
   header_t hdr;
-  assert(!parse_header(&hdr, STACK_IPV6_UDP, ipv6_udp_packet, 48));
+  int      offset = 0;
+  assert(!parse_header(&hdr, &offset, ipv6_udp_packet, 48));
 
   // IPv6 Version
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.version, ipv6_expected_version,
+  assert(memcmp(hdr.ipv6_hdr.version, ipv6_expected_version,
                 IPV6_VERSION_BYTE_LENGTH) == 0);
 
   // IPv6 Traffic Class
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.traffic_class,
-                ipv6_expected_traffic_class,
+  assert(memcmp(hdr.ipv6_hdr.traffic_class, ipv6_expected_traffic_class,
                 IPV6_TRAFFIC_CLASS_BYTE_LENGTH) == 0);
 
   // IPv6 Flow Label
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.flow_label, ipv6_expected_flow_label,
+  assert(memcmp(hdr.ipv6_hdr.flow_label, ipv6_expected_flow_label,
                 IPV6_FLOW_LABEL_BYTE_LENGTH) == 0);
 
   // IPv6 Payload Length
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.payload_length,
-                ipv6_expected_payload_length,
+  assert(memcmp(hdr.ipv6_hdr.payload_length, ipv6_expected_payload_length,
                 IPV6_PAYLOAD_LENGTH_BYTE_LENGTH) == 0);
 
   // IPv6 Next Header
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.next_header, ipv6_expected_next_header,
+  assert(memcmp(hdr.ipv6_hdr.next_header, ipv6_expected_next_header,
                 IPV6_NEXT_HEADER_BYTE_LENGTH) != 0);
 
   // IPv6 Hop Limit
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.hop_limit, ipv6_expected_hop_limit,
+  assert(memcmp(hdr.ipv6_hdr.hop_limit, ipv6_expected_hop_limit,
                 IPV6_HOP_LIMIT_BYTE_LENGTH) == 0);
 
   // IPv6 Source Address
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.source_address,
-                ipv6_expected_source_address,
+  assert(memcmp(hdr.ipv6_hdr.source_address, ipv6_expected_source_address,
                 IPV6_SRC_ADDRESS_BYTE_LENGTH) == 0);
 
   // IPv6 Destination Address
-  assert(memcmp(hdr.ipv6_udp.ipv6_hdr.destination_address,
+  assert(memcmp(hdr.ipv6_hdr.destination_address,
                 ipv6_expected_destination_address,
                 IPV6_DST_ADDRESS_BYTE_LENGTH) == 0);
 

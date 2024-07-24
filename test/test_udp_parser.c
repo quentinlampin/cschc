@@ -27,12 +27,15 @@ void test_udp_parser(void) {
   const uint8_t udp_expected_length[]   = {0x00, 0x10};
   const uint8_t udp_expected_checksum[] = {0x2d, 0xa1};
 
-  int       next_offset;
   udp_hdr_t udp_parsed_header;
 
-  next_offset = parse_udp_header(&udp_parsed_header, udp_header, 0, 8);
+  // Parse a packet smaller than UDP Header byte len
+  int offset = 0;
+  assert(!parse_udp_header(&udp_parsed_header, &offset, udp_header, 4));
 
-  assert(next_offset == 8);
+  // Parse UDP Header properly
+  assert(parse_udp_header(&udp_parsed_header, &offset, udp_header, 8));
+  assert(offset == 8);
 
   // UDP App Port
   assert(memcmp(udp_parsed_header.app_port, udp_expected_app_port,
@@ -76,12 +79,15 @@ void test_udp_parser_from_packet(void) {
   const uint8_t udp_expected_length[]   = {0x00, 0x14};
   const uint8_t udp_expected_checksum[] = {0x00, 0x00};
 
-  int       next_offset;
   udp_hdr_t udp_parsed_header;
 
-  next_offset = parse_udp_header(&udp_parsed_header, ipv6_udp_packet, 40, 48);
+  // Parse a packet smaller than UDP Header byte len
+  int offset = 40;
+  assert(!parse_udp_header(&udp_parsed_header, &offset, ipv6_udp_packet, 45));
 
-  assert(next_offset == 48);
+  // Parse UDP Header properly
+  assert(parse_udp_header(&udp_parsed_header, &offset, ipv6_udp_packet, 48));
+  assert(offset == 48);
 
   // UDP App Port
   assert(memcmp(udp_parsed_header.app_port, udp_expected_app_port,
