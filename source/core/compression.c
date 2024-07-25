@@ -64,7 +64,7 @@ static size_t __compression_handler(uint8_t*           schc_packet,
  */
 static int __compression(uint8_t*     comp_residue,
                          const size_t comp_residue_max_byte_len,
-                         int* bit_position, const header_t* header,
+                         int* bit_position, header_t* header,
                          const rule_desc_t* rule_desc, const uint8_t* context,
                          const size_t context_byte_len);
 
@@ -207,15 +207,15 @@ static size_t __compression_handler(uint8_t*           schc_packet,
 
 static int __compression(uint8_t*     comp_residue,
                          const size_t comp_residue_max_byte_len,
-                         int* bit_position, const header_t* header,
+                         int* bit_position, header_t* header,
                          const rule_desc_t* rule_desc, const uint8_t* context,
                          const size_t context_byte_len) {
   int               schc_compression_status;
   int               schc_bit_to_add;
   int               target_value_offset;
   int               rule_field_desc_offset;
-  int               rule_field_desc_ind;
   rule_field_desc_t rule_field_desc;
+  uint16_t          field_fid;
   uint8_t*          field_ptr;
 
   // SCHC Rule ID
@@ -226,29 +226,24 @@ static int __compression(uint8_t*     comp_residue,
   }
 
   // SCHC Field Compression
-  rule_field_desc_ind = 0;
-  while (rule_field_desc_ind < rule_desc->card_rule_field_desc &&
-         schc_compression_status) {
-    schc_compression_status = get_rule_field_desc_offset(
-        &rule_field_desc_offset, rule_desc, rule_field_desc_ind, context,
+  field_ptr = header->ipv6_hdr.version;
+
+  while (field_ptr && schc_compression_status) {
+    // Get FID corresponding to field_ptr
+    schc_compression_status =
+        get_fid_from_field_ptr(&field_fid, field_ptr, header);
+
+    // Get Rule Field Descriptor offset from FID
+    schc_compression_status = get_rule_field_desc_offset_from_fid(
+        &rule_field_desc_offset, field_fid, rule_desc, context,
         context_byte_len);
 
-    if (!schc_compression_status) {
-      break;
-    }
-
-    // Get Rule Field Descriptor and First Target Value offset (if exist)
+    // Get Rule Field Descriptor content and First Target Value offset (if
+    // exist)
     target_value_offset = get_rule_field_desc_info(
         &rule_field_desc, rule_field_desc_offset, context, context_byte_len);
 
-    // Get field to compress which correspond to the current FID
-    schc_compression_status =
-        get_header_field(&field_ptr, header, rule_field_desc.fid);
-
-    if (!schc_compression_status) {
-      break;
-    }
-
+    // Apply CDA
     switch (rule_field_desc.cda) {
       case CDA_LSB: {
         schc_bit_to_add = rule_field_desc.len - rule_field_desc.msb_len;
@@ -303,11 +298,7 @@ static int __compression(uint8_t*     comp_residue,
                                   bit_position, schc_bit_to_add);
     }
 
-    if (!schc_compression_status) {
-      break;
-    }
-
-    rule_field_desc_ind++;
+    get_next_header_field(&field_ptr, header, rule_field_desc.fid);
   }
 
   return schc_compression_status;

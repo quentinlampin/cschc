@@ -26,13 +26,24 @@ int parse_header(header_t* header, int* offset, const uint8_t* packet,
                  const size_t packet_byte_len);
 
 /**
- * @brief Get the header field pointer corresponding to the FID.
+ * @brief Get the next header field pointer thanks to the previous FID.
  *
  * @param field_ptr Pointer to the field.
  * @param header Pointer to the header content.
  * @param fid Field ID.
  * @return The status code, 1 for success otherwise 0.
  */
-int get_header_field(uint8_t** field_ptr, header_t* header, const uint16_t fid);
+int get_next_header_field(uint8_t** field_ptr, header_t* header,
+                          const uint16_t fid);
+
+/**
+ * @brief Get the fid from a field pointer.
+ *
+ * @param fid The FID which corresponds to the field_ptr.
+ * @param field_ptr Pointer to the field.
+ * @param header Pointer to the header content.
+ * @return The status code, 1 for success otherwise 0.
+ */
+int get_fid_from_field_ptr(uint16_t* fid, uint8_t* field_ptr, header_t* header);
 
 #endif  // _PARSER_H_
