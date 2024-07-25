@@ -182,9 +182,84 @@ void test_ipv6_udp_parser_header_wrong_next_header_field(void) {
 
 /* ********************************************************************** */
 
+void test_get_next_header_field(void) {
+  /**
+   * @brief Testing next header field getter.
+   *
+   * @details The testing packet (ipv6_udp_packet) is the same as in
+   * test_ipv6_udp_parser_header().
+   */
+  const uint8_t ipv6_udp_packet[] = {
+      0x6f, 0xf9, 0xaa, 0xf2, 0x00, 0x14, 0x11, 0x40, 0xfe, 0x80, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x5e, 0xff, 0xfe, 0x00, 0x00, 0x01,
+      0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x5e, 0xff,
+      0xfe, 0x00, 0x00, 0x02, 0x1f, 0x90, 0x00, 0x35, 0x00, 0x14, 0x00, 0x00};
+
+  uint8_t *field_ptr;
+  header_t header;
+  int      offset = 0;
+  parse_header(&header, &offset, ipv6_udp_packet, sizeof(ipv6_udp_packet));
+
+  // Get the field after IPv6 Version -> IPv6 Traffic Class
+  assert(get_next_header_field(&field_ptr, &header, FID_IPV6_VERSION));
+  assert(memcmp(field_ptr, header.ipv6_hdr.traffic_class,
+                IPV6_TRAFFIC_CLASS_BYTE_LENGTH) == 0);
+
+  // Get the field after IPv6 Source Address -> IPv6 Destination Address
+  assert(get_next_header_field(&field_ptr, &header, FID_IPV6_SRC_ADDRESS));
+  assert(memcmp(field_ptr, header.ipv6_hdr.destination_address,
+                IPV6_DST_ADDRESS_BYTE_LENGTH) == 0);
+
+  // Get the field after IPv6 Destination Address -> UDP App Port
+  assert(get_next_header_field(&field_ptr, &header, FID_IPV6_DST_ADDRESS));
+  assert(memcmp(field_ptr, header.udp_hdr.app_port, UDP_APP_PORT_BYTE_LENGTH) ==
+         0);
+
+  // Get the field after IPv6 Version -> Nothing yet
+  assert(!get_next_header_field(&field_ptr, &header, FID_UDP_CHECKSUM));
+  assert(field_ptr == NULL);
+}
+
+/* ********************************************************************** */
+
+void test_get_fid_from_field_ptr(void) {
+  /**
+   * @brief Testing FID getter from field pointer.
+   *
+   * @details The testing packet (ipv6_udp_packet) is the same as in
+   * test_ipv6_udp_parser_header().
+   */
+  const uint8_t ipv6_udp_packet[] = {
+      0x6f, 0xf9, 0xaa, 0xf2, 0x00, 0x14, 0x11, 0x40, 0xfe, 0x80, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x5e, 0xff, 0xfe, 0x00, 0x00, 0x01,
+      0xfe, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x5e, 0xff,
+      0xfe, 0x00, 0x00, 0x02, 0x1f, 0x90, 0x00, 0x35, 0x00, 0x14, 0x00, 0x00};
+
+  uint16_t fid;
+  header_t header;
+  int      offset = 0;
+  parse_header(&header, &offset, ipv6_udp_packet, sizeof(ipv6_udp_packet));
+
+  // Get IPv6 Flow Label FID
+  assert(get_fid_from_field_ptr(&fid, header.ipv6_hdr.flow_label, &header));
+  assert(fid == FID_IPV6_FLOW_LABEL);
+
+  // Get IPv6 Hop Limit FID
+  assert(get_fid_from_field_ptr(&fid, header.ipv6_hdr.hop_limit, &header));
+  assert(fid == FID_IPV6_HOP_LIMIT);
+
+  // Get UDP Length FID
+  assert(get_fid_from_field_ptr(&fid, header.udp_hdr.length, &header));
+  assert(fid == FID_UDP_LENGTH);
+}
+
+/* ********************************************************************** */
+
 int main() {
   test_ipv6_udp_parser_header();
   test_ipv6_udp_parser_header_wrong_next_header_field();
+  test_get_next_header_field();
+  test_get_fid_from_field_ptr();
 
   printf("All tests passed!\n");
 
