@@ -33,6 +33,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/core/rule_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/core/context.c
+    ${PROJECT_SOURCE_DIR}/source/core/compression.c
 )
 
 
