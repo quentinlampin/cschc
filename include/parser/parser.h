@@ -10,7 +10,7 @@
 typedef struct {
   ipv6_hdr_t ipv6_hdr;
   udp_hdr_t  udp_hdr;
-  // coap ; not implemented yet
+  // CoAP : not implemented yet
 } header_t;
 
 /**
@@ -26,7 +26,7 @@ int parse_header(header_t* header, int* offset, const uint8_t* packet,
                  const size_t packet_byte_len);
 
 /**
- * @brief Get the next header field pointer thanks to the previous FID.
+ * @brief Gets the next header field pointer using the previous FID.
  *
  * @param field_ptr Pointer to the field.
  * @param header Pointer to the header content.
@@ -37,7 +37,7 @@ int get_next_header_field(uint8_t** field_ptr, header_t* header,
                           const uint16_t fid);
 
 /**
- * @brief Get the fid from a field pointer.
+ * @brief Gets the FID from a field pointer.
  *
  * @param fid The FID which corresponds to the field_ptr.
  * @param field_ptr Pointer to the field.

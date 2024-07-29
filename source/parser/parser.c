@@ -119,9 +119,7 @@ int get_fid_from_field_ptr(uint16_t* fid, uint8_t* field_ptr,
     *fid = FID_UDP_LENGTH;
   } else if (field_ptr == header->udp_hdr.checksum) {
     *fid = FID_UDP_CHECKSUM;
-  }
-
-  else {
+  } else {
     *fid   = 0;
     status = 0;
   }
