@@ -15,18 +15,18 @@
  *
  * @param packet Pointer to the packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
+ * @param packet_direction Packet Direction Indicator.
  * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
  * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
  * @param context Pointer to the SCHC Context used to perform decompression.
  * @param context_byte_len Byte length of the context.
  * @return The final byte length of the decompressed SCHC packet.
  */
-static size_t __decompression_handler(uint8_t       *packet,
-                                      const size_t   packet_max_byte_len,
-                                      const uint8_t *schc_packet,
-                                      const size_t   schc_packet_byte_len,
-                                      const uint8_t *context,
-                                      const size_t   context_byte_len);
+static size_t __decompression_handler(
+    uint8_t *packet, const size_t packet_max_byte_len,
+    const direction_indicator_t packet_direction, const uint8_t *schc_packet,
+    const size_t schc_packet_byte_len, const uint8_t *context,
+    const size_t context_byte_len);
 
 /**
  * @brief Get the SCHC Rule Descriptor used to perform compression and therefore
@@ -69,8 +69,9 @@ static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
  * @param packet Pointer to the packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
  * @param packet_bit_position Pointer to the current bit position of the packet.
- * @param schc_packet_bit_positionPointer to the current bit position of the
+ * @param schc_packet_bit_position Pointer to the current bit position of the
  * SCHC packet.
+ * @param packet_direction Packet Direction Indicator.
  * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
  * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
  * @param rule_descriptor Pointer to the Rule Descriptor used to decompress.
@@ -79,11 +80,12 @@ static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
  * @return The decompression status code, 1 for success, otherwise 0.
  */
 static int __compression(uint8_t *packet, const size_t packet_max_byte_len,
-                         size_t                  *packet_bit_position,
-                         size_t                   schc_packet_bit_position,
-                         const uint8_t           *schc_packet,
-                         const size_t             schc_packet_byte_len,
-                         const rule_descriptor_t *rule_descriptor,
+                         size_t                     *packet_bit_position,
+                         size_t                      schc_packet_bit_position,
+                         const direction_indicator_t packet_direction,
+                         const uint8_t              *schc_packet,
+                         const size_t                schc_packet_byte_len,
+                         const rule_descriptor_t    *rule_descriptor,
                          const uint8_t *context, const size_t context_byte_len);
 
 /* ********************************************************************** */
@@ -91,13 +93,15 @@ static int __compression(uint8_t *packet, const size_t packet_max_byte_len,
 /* ********************************************************************** */
 
 size_t decompress(uint8_t *packet, const size_t packet_max_byte_len,
+                  const direction_indicator_t packet_direction,
+
                   const uint8_t *schc_packet, const size_t schc_packet_byte_len,
                   const uint8_t *context, const size_t context_byte_len) {
   size_t packet_byte_len;
 
-  packet_byte_len =
-      __decompression_handler(packet, packet_max_byte_len, schc_packet,
-                              schc_packet_byte_len, context, context_byte_len);
+  packet_byte_len = __decompression_handler(
+      packet, packet_max_byte_len, packet_direction, schc_packet,
+      schc_packet_byte_len, context, context_byte_len);
 
   return packet_byte_len;
 }
@@ -106,12 +110,11 @@ size_t decompress(uint8_t *packet, const size_t packet_max_byte_len,
 /*                            Static functions                            */
 /* ********************************************************************** */
 
-static size_t __decompression_handler(uint8_t       *packet,
-                                      const size_t   packet_max_byte_len,
-                                      const uint8_t *schc_packet,
-                                      const size_t   schc_packet_byte_len,
-                                      const uint8_t *context,
-                                      const size_t   context_byte_len) {
+static size_t __decompression_handler(
+    uint8_t *packet, const size_t packet_max_byte_len,
+    const direction_indicator_t packet_direction, const uint8_t *schc_packet,
+    const size_t schc_packet_byte_len, const uint8_t *context,
+    const size_t context_byte_len) {
   int                schc_decompression_status;
   size_t             schc_packet_bit_position;
   size_t             packet_bit_position;
@@ -139,8 +142,8 @@ static size_t __decompression_handler(uint8_t       *packet,
     case NATURE_COMPRESSION:
       schc_decompression_status = __compression(
           packet, packet_max_byte_len, &packet_bit_position,
-          schc_packet_bit_position, schc_packet, schc_packet_byte_len,
-          rule_descriptor, context, context_byte_len);
+          schc_packet_bit_position, packet_direction, schc_packet,
+          schc_packet_byte_len, rule_descriptor, context, context_byte_len);
 
       if (schc_decompression_status) {
         packet_byte_len = BYTE_LENGTH(packet_bit_position);
@@ -217,14 +220,12 @@ static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
 
 /* ********************************************************************** */
 
-static int __compression(uint8_t *packet, const size_t packet_max_byte_len,
-                         size_t                  *packet_bit_position,
-                         size_t                   schc_packet_bit_position,
-                         const uint8_t           *schc_packet,
-                         const size_t             schc_packet_byte_len,
-                         const rule_descriptor_t *rule_descriptor,
-                         const uint8_t           *context,
-                         const size_t             context_byte_len) {
+static int __compression(
+    uint8_t *packet, const size_t packet_max_byte_len,
+    size_t *packet_bit_position, size_t schc_packet_bit_position,
+    const direction_indicator_t packet_direction, const uint8_t *schc_packet,
+    const size_t schc_packet_byte_len, const rule_descriptor_t *rule_descriptor,
+    const uint8_t *context, const size_t context_byte_len) {
   int                      schc_decompression_status;
   int                      index_rule_field_descriptor;
   size_t                   payload_byte_position;
@@ -259,6 +260,13 @@ static int __compression(uint8_t *packet, const size_t packet_max_byte_len,
     schc_decompression_status = get_rule_field_descriptor(
         rule_field_descriptor, index_rule_field_descriptor,
         rule_descriptor->offset, context, context_byte_len);
+
+    // Check if the Rule Field Descriptor DI corresponds to the packet DI
+    if (rule_field_descriptor->di != DI_BI &&
+        rule_field_descriptor->di != packet_direction) {
+      index_rule_field_descriptor++;
+      continue;
+    }
 
     // Set the bit length of compressed field
     if (rule_field_descriptor->len == 0) {

@@ -116,8 +116,9 @@ void test_decompression_microschc(void) {
   uint8_t packet[150];
   memset(packet, 0, 150);
 
-  size_t packet_byte_len = decompress(
-      packet, 150, schc_packet, schc_packet_byte_len, context, context_len);
+  size_t packet_byte_len =
+      decompress(packet, 150, DI_UP, schc_packet, schc_packet_byte_len, context,
+                 context_len);
 
   assert(packet_byte_len == expected_packet_byte_len);
   assert(memcmp(packet, expected_packet, packet_byte_len) == 0);
@@ -237,8 +238,9 @@ void test_no_compression(void) {
   uint8_t packet[150];
   memset(packet, 0, 150);
 
-  size_t packet_byte_len = decompress(
-      packet, 150, schc_packet, schc_packet_byte_len, context, context_len);
+  size_t packet_byte_len =
+      decompress(packet, 150, DI_UP, schc_packet, schc_packet_byte_len, context,
+                 context_len);
 
   assert(packet_byte_len == expected_packet_byte_len);
   assert(memcmp(packet, expected_packet, packet_byte_len) == 0);
@@ -408,8 +410,8 @@ void test_several_packets(void) {
   const size_t schc_packet1_byte_len = sizeof(schc_packet1);
 
   memset(packet, 0, 150);
-  packet_byte_len = decompress(packet, 150, schc_packet1, schc_packet1_byte_len,
-                               context, context_len);
+  packet_byte_len = decompress(packet, 150, DI_UP, schc_packet1,
+                               schc_packet1_byte_len, context, context_len);
 
   assert(packet_byte_len == expected_packet1_byte_len);
   assert(memcmp(packet, expected_packet1, packet_byte_len) == 0);
@@ -432,8 +434,8 @@ void test_several_packets(void) {
   const size_t  schc_packet2_byte_len = sizeof(schc_packet2);
 
   memset(packet, 0, 150);
-  packet_byte_len = decompress(packet, 150, schc_packet2, schc_packet2_byte_len,
-                               context, context_len);
+  packet_byte_len = decompress(packet, 150, DI_UP, schc_packet2,
+                               schc_packet2_byte_len, context, context_len);
 
   assert(packet_byte_len == expected_packet2_byte_len);
   assert(memcmp(packet, expected_packet2, packet_byte_len) == 0);
@@ -603,8 +605,8 @@ void test_on_byte_aligned_payload(void) {
   const size_t schc_packet1_byte_len = sizeof(schc_packet1);
 
   memset(packet, 0, 150);
-  packet_byte_len = decompress(packet, 150, schc_packet1, schc_packet1_byte_len,
-                               context, context_len);
+  packet_byte_len = decompress(packet, 150, DI_UP, schc_packet1,
+                               schc_packet1_byte_len, context, context_len);
 
   assert(packet_byte_len == expected_packet1_byte_len);
   assert(memcmp(packet, expected_packet1, packet_byte_len) == 0);
@@ -877,8 +879,8 @@ void test_coap_option_extended(void) {
   const size_t schc_packet1_byte_len = sizeof(schc_packet1);
 
   memset(packet, 0, 150);
-  packet_byte_len = decompress(packet, 150, schc_packet1, schc_packet1_byte_len,
-                               context, context_len);
+  packet_byte_len = decompress(packet, 150, DI_UP, schc_packet1,
+                               schc_packet1_byte_len, context, context_len);
 
   assert(packet_byte_len == expected_packet1_byte_len);
   assert(memcmp(packet, expected_packet1, packet_byte_len) == 0);
@@ -906,8 +908,8 @@ void test_coap_option_extended(void) {
   const size_t schc_packet2_byte_len = sizeof(schc_packet2);
 
   memset(packet, 0, 150);
-  packet_byte_len = decompress(packet, 150, schc_packet2, schc_packet2_byte_len,
-                               context, context_len);
+  packet_byte_len = decompress(packet, 150, DI_UP, schc_packet2,
+                               schc_packet2_byte_len, context, context_len);
 
   assert(packet_byte_len == expected_packet2_byte_len);
   assert(memcmp(packet, expected_packet2, packet_byte_len) == 0);
