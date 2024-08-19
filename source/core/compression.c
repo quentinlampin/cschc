@@ -15,18 +15,18 @@
  *
  * @param schc_packet Pointer to the SCHC packet to fill.
  * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param packet_direction Packet Direction Indicator.
  * @param packet Pointer to the packet that needs to be compressed.
  * @param packet_byte_len Byte length of the packet to compress.
  * @param context Pointer to the context used to perform compression.
  * @param context_byte_len Byte length of the context.
  * @return The final byte length of the SCHC packet.
  */
-static size_t __compression_handler(uint8_t*       schc_packet,
-                                    const size_t   schc_packet_max_byte_len,
-                                    const uint8_t* packet,
-                                    const size_t   packet_byte_len,
-                                    const uint8_t* context,
-                                    const size_t   context_byte_len);
+static size_t __compression_handler(
+    uint8_t* schc_packet, const size_t schc_packet_max_byte_len,
+    const direction_indicator_t packet_direction, const uint8_t* packet,
+    const size_t packet_byte_len, const uint8_t* context,
+    const size_t context_byte_len);
 
 /**
  * @brief Add SCHC Rule ID at the beginning of the SCHC Packet (Compression
@@ -71,6 +71,7 @@ static int __no_compression(uint8_t*     schc_packet,
  * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
  * @param bit_position Pointer to the current position, from where to add the
  * rule_id value.
+ * @param packet_direction Packet Direction Indicator.
  * @param packet Pointer to the packet that needs to be compressed.
  * @param packet_byte_len Byte length of the packet to compress.
  * @param rule_descriptor Pointer to the Rule Descriptor used to compress the
@@ -79,10 +80,11 @@ static int __no_compression(uint8_t*     schc_packet,
  * @param context_byte_len Byte length of the context.
  * @return The compression status code, 1 for success, otherwise 0.
  */
-static int __compression(uint8_t*     schc_packet,
-                         const size_t schc_packet_max_byte_len,
-                         size_t* bit_position, const uint8_t* packet,
-                         const size_t             packet_byte_len,
+static int __compression(uint8_t*                    schc_packet,
+                         const size_t                schc_packet_max_byte_len,
+                         size_t*                     bit_position,
+                         const direction_indicator_t packet_direction,
+                         const uint8_t* packet, const size_t packet_byte_len,
                          const rule_descriptor_t* rule_descriptor,
                          const uint8_t* context, const size_t context_byte_len);
 
@@ -108,13 +110,14 @@ static int __variable_length_encoding(uint8_t*     schc_packet,
 /* ********************************************************************** */
 
 size_t compress(uint8_t* schc_packet, const size_t schc_packet_max_byte_len,
+                const direction_indicator_t packet_direction,
                 const uint8_t* packet, const size_t packet_byte_len,
                 const uint8_t* context, const size_t context_byte_len) {
   size_t schc_packet_byte_len;
 
-  schc_packet_byte_len =
-      __compression_handler(schc_packet, schc_packet_max_byte_len, packet,
-                            packet_byte_len, context, context_byte_len);
+  schc_packet_byte_len = __compression_handler(
+      schc_packet, schc_packet_max_byte_len, packet_direction, packet,
+      packet_byte_len, context, context_byte_len);
 
   return schc_packet_byte_len;
 }
@@ -123,12 +126,11 @@ size_t compress(uint8_t* schc_packet, const size_t schc_packet_max_byte_len,
 /*                            Static functions                            */
 /* ********************************************************************** */
 
-static size_t __compression_handler(uint8_t*       schc_packet,
-                                    const size_t   schc_packet_max_byte_len,
-                                    const uint8_t* packet,
-                                    const size_t   packet_byte_len,
-                                    const uint8_t* context,
-                                    const size_t   context_byte_len) {
+static size_t __compression_handler(
+    uint8_t* schc_packet, const size_t schc_packet_max_byte_len,
+    const direction_indicator_t packet_direction, const uint8_t* packet,
+    const size_t packet_byte_len, const uint8_t* context,
+    const size_t context_byte_len) {
   int     schc_compression_status;
   int     index_rule_descriptor;
   uint8_t card_rule_descriptor;
@@ -162,9 +164,10 @@ static size_t __compression_handler(uint8_t*       schc_packet,
     // SCHC packet filling
     switch (rule_descriptor->nature) {
       case NATURE_COMPRESSION:
-        schc_compression_status = __compression(
-            schc_packet, schc_packet_max_byte_len, &bit_position, packet,
-            packet_byte_len, rule_descriptor, context, context_byte_len);
+        schc_compression_status =
+            __compression(schc_packet, schc_packet_max_byte_len, &bit_position,
+                          packet_direction, packet, packet_byte_len,
+                          rule_descriptor, context, context_byte_len);
         break;
 
       case NATURE_FRAGMENTATION:
@@ -226,10 +229,11 @@ static int __no_compression(uint8_t*     schc_packet,
 
 /* ********************************************************************** */
 
-static int __compression(uint8_t*     schc_packet,
-                         const size_t schc_packet_max_byte_len,
-                         size_t* bit_position, const uint8_t* packet,
-                         const size_t             packet_byte_len,
+static int __compression(uint8_t*                    schc_packet,
+                         const size_t                schc_packet_max_byte_len,
+                         size_t*                     bit_position,
+                         const direction_indicator_t packet_direction,
+                         const uint8_t* packet, const size_t packet_byte_len,
                          const rule_descriptor_t* rule_descriptor,
                          const uint8_t*           context,
                          const size_t             context_byte_len) {
@@ -262,6 +266,13 @@ static int __compression(uint8_t*     schc_packet,
     schc_compression_status = get_rule_field_descriptor(
         rule_field_descriptor, index_rule_field_descriptor,
         rule_descriptor->offset, context, context_byte_len);
+
+    // Check if the Rule Field Descriptor DI corresponds to the packet DI
+    if (rule_field_descriptor->di != DI_BI &&
+        rule_field_descriptor->di != packet_direction) {
+      index_rule_field_descriptor++;
+      continue;
+    }
 
     // Set the bit length to extract
     if (rule_field_descriptor->len == 0) {
