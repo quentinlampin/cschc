@@ -15,51 +15,50 @@ project(cschc
 include_directories(
     ${PROJECT_SOURCE_DIR}/include/
     ${PROJECT_SOURCE_DIR}/include/utils/
-    ${PROJECT_SOURCE_DIR}/include/parser/
-    ${PROJECT_SOURCE_DIR}/include/parser/protocol/
+    ${PROJECT_SOURCE_DIR}/include/protocols/
     ${PROJECT_SOURCE_DIR}/include/core/
 )
 
 add_library(cschc
+    # Utils
     ${PROJECT_SOURCE_DIR}/source/utils/log.c
     ${PROJECT_SOURCE_DIR}/source/utils/binary.c
-
-    ${PROJECT_SOURCE_DIR}/source/parser/protocol/ipv6.c
-    ${PROJECT_SOURCE_DIR}/source/parser/protocol/udp.c
-    ${PROJECT_SOURCE_DIR}/source/parser/parser.c
-
+    ${PROJECT_SOURCE_DIR}/source/utils/memory.c
+    # Headers
+    ${PROJECT_SOURCE_DIR}/source/protocols/headers.c
+    # Core
+    ${PROJECT_SOURCE_DIR}/source/core/rule_descriptor.c
+    ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
-    ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
-    ${PROJECT_SOURCE_DIR}/source/core/rule_descriptor.c
-    ${PROJECT_SOURCE_DIR}/source/core/context.c
     ${PROJECT_SOURCE_DIR}/source/core/compression.c
+    ${PROJECT_SOURCE_DIR}/source/core/decompression.c
 )
 
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-    # tests
+    # Tests
     enable_testing()
 
-    # - Utils
-    add_executable(test-utils ${PROJECT_SOURCE_DIR}/test/test_utils.c)
-    target_link_libraries(test-utils PRIVATE cschc)
-    add_test(NAME test-utils COMMAND $<TARGET_FILE:test-utils>)
+    # - Binary
+    add_executable(test-binary ${PROJECT_SOURCE_DIR}/test/test_binary.c)
+    target_link_libraries(test-binary PRIVATE cschc)
+    add_test(NAME test-binary COMMAND $<TARGET_FILE:test-binary>)
 
-    # - IPv6 parser
-    add_executable(test-ipv6-parser ${PROJECT_SOURCE_DIR}/test/test_ipv6_parser.c)
-    target_link_libraries(test-ipv6-parser PRIVATE cschc)
-    add_test(NAME test-ipv6-parser COMMAND $<TARGET_FILE:test-ipv6-parser>)
+    # - Memory
+    add_executable(test-memory ${PROJECT_SOURCE_DIR}/test/test_memory.c)
+    target_link_libraries(test-memory PRIVATE cschc)
+    add_test(NAME test-memory COMMAND $<TARGET_FILE:test-memory>)
 
-    # - UDP parser
-    add_executable(test-udp-parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
-    target_link_libraries(test-udp-parser PRIVATE cschc)
-    add_test(NAME test-udp-parser COMMAND $<TARGET_FILE:test-udp-parser>)
+    # - Rule Descriptor
+    add_executable(test-rule-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_descriptor.c)
+    target_link_libraries(test-rule-descriptor PRIVATE cschc)
+    add_test(NAME test-rule-descriptor COMMAND $<TARGET_FILE:test-rule-descriptor>)
 
-    # - Header parser
-    add_executable(test-parser ${PROJECT_SOURCE_DIR}/test/test_parser.c)
-    target_link_libraries(test-parser PRIVATE cschc)
-    add_test(NAME test-parser COMMAND $<TARGET_FILE:test-parser>)
+    # - Rule Field Descriptor
+    add_executable(test-rule-field-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_field_descriptor.c)
+    target_link_libraries(test-rule-field-descriptor PRIVATE cschc)
+    add_test(NAME test-rule-field-descriptor COMMAND $<TARGET_FILE:test-rule-field-descriptor>)
 
     # - Matching Operators
     add_executable(test-matching-operators ${PROJECT_SOURCE_DIR}/test/test_matching_operators.c)
@@ -71,15 +70,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     target_link_libraries(test-comp-decomp-actions PRIVATE cschc)
     add_test(NAME test-comp-decomp-actions COMMAND $<TARGET_FILE:test-comp-decomp-actions>)
 
-    # Rule Field Descriptor
-    add_executable(test-rule-field-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_field_descriptor.c)
-    target_link_libraries(test-rule-field-descriptor PRIVATE cschc)
-    add_test(NAME test-rule-field-descriptor COMMAND $<TARGET_FILE:test-rule-field-descriptor>)
+    # - Compression
+    add_executable(test-compression ${PROJECT_SOURCE_DIR}/test/test_compression.c)
+    target_link_libraries(test-compression PRIVATE cschc)
+    add_test(NAME test-compression COMMAND $<TARGET_FILE:test-compression>)
 
-    # Rule Descriptor
-    add_executable(test-rule-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_descriptor.c)
-    target_link_libraries(test-rule-descriptor PRIVATE cschc)
-    add_test(NAME test-rule-descriptor COMMAND $<TARGET_FILE:test-rule-descriptor>)
+    # - Decompression
+    add_executable(test-decompression ${PROJECT_SOURCE_DIR}/test/test_decompression.c)
+    target_link_libraries(test-decompression PRIVATE cschc)
+    add_test(NAME test-decompression COMMAND $<TARGET_FILE:test-decompression>)
 endif()
 
 

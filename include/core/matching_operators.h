@@ -1,31 +1,75 @@
 #ifndef _MATCHING_OPERATORS_H_
 #define _MATCHING_OPERATORS_H_
 
+#include "rule_field_descriptor.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 /**
- * @brief Enumeration which defines SCHC RFC 8724 matching operators.
+ * @brief Checks if the field corresponds to the Target Value defined in the
+ * current Rule Field Descriptor.
+ *
+ * @param field Pointer to the field value.
+ * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param context Pointer to the SCHC Context.
+ * @param context_byte_len Byte length of the context.
+ * @return The matching result, 1 for success, otherwise 0.
  */
-typedef enum {
-  MO_EQUAL = 0,
-  MO_IGNORE,
-  MO_MSB,
-  MO_MATCH_MAPPING
-} matching_operator_t;
+int MO_equal(const uint8_t*                 field,
+             const rule_field_descriptor_t* rule_field_descriptor,
+             const uint8_t* context, const size_t context_byte_len);
 
-int MO_equal(const uint8_t* field, const size_t field_len,
-             const uint16_t tv_offset, const uint8_t* context,
-             const size_t context_len);
-
+/**
+ * @brief Basically does nothing.
+ *
+ * @return 1 for success.
+ */
 int MO_ignore(void);
 
-int MO_most_significant_bits(const uint8_t* field, const size_t field_len,
-                             const size_t msb_len, const uint16_t tv_offset,
-                             const uint8_t* context, const size_t context_len);
+/**
+ * @brief Checks if the most significant bits of the field correspond to the
+ * Target Value defined in the current Rule Field Descriptor.
+ *
+ * @param field Pointer to the field value.
+ * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param context Pointer to the SCHC Context.
+ * @param context_byte_len Byte length of the context.
+ * @return The matching result, 1 for success, otherwise 0.
+ */
+int MO_most_significant_bits(
+    const uint8_t* field, const rule_field_descriptor_t* rule_field_descriptor,
+    const uint8_t* context, const size_t context_byte_len);
 
-int MO_match_mapping(const uint8_t* field, const size_t field_len,
-                     const uint16_t list_tv_offset, const uint8_t* context,
-                     const size_t context_len);
+/**
+ * @brief Checks if the field corresponds to one of the Target Values listed in
+ * the current Rule Field Descriptor.
+ *
+ * @param field Pointer to the field value.
+ * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param context Pointer to the SCHC Context.
+ * @param context_byte_len Byte length of the context.
+ * @return The matching result, 1 for success, otherwise 0.
+ */
+int MO_match_mapping(const uint8_t*                 field,
+                     const rule_field_descriptor_t* rule_field_descriptor,
+                     const uint8_t* context, const size_t context_byte_len);
+
+/**
+ * @brief Checks if the field corresponds to the Target Value directly from its
+ * offset.
+ *
+ * @param field Pointer to the field value.
+ * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param target_value_offset Offset of the Target Value.
+ * @param context Pointer to the SCHC Context.
+ * @param context_byte_len Byte length of the context.
+ * @return The matching result, 1 for success, otherwise 0.
+ */
+int __MO_equal_from_offset(const uint8_t*                 field,
+                           const rule_field_descriptor_t* rule_field_descriptor,
+                           const uint16_t                 target_value_offset,
+                           const uint8_t*                 context,
+                           const size_t                   context_byte_len);
 
 #endif  // _MATCHING_OPERATORS_H_

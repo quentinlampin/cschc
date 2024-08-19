@@ -1,23 +1,31 @@
 #ifndef _RULE_DESCRIPTOR_H_
 #define _RULE_DESCRIPTOR_H_
 
+#include "schc8724.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-typedef enum {
-  NATURE_COMPRESSION = 0,
-  NATURE_NO_COMPRESSION,
-  NATURE_FRAGMENTATION
-} nature_t;
-
+/**
+ * @brief Struct that defines a Rule Descriptor.
+ */
 typedef struct {
   uint16_t offset;
   uint8_t  id;
   nature_t nature;
-  uint8_t  card_rule_field_desc;
-} rule_desc_t;
+  uint8_t  card_rule_field_descriptor;
+} rule_descriptor_t;
 
-int get_rule_desc_info(rule_desc_t *rule_desc, int offset,
-                       const uint8_t *context, const size_t context_len);
+/**
+ * @brief Get a Rule Descriptor thanks to an index.
+ *
+ * @param rule_descriptor Pointer to the Rule Descriptor to fill.
+ * @param index Index of the Rule Descriptor to get in context.
+ * @param context Pointer to the SCHC Context.
+ * @param context_byte_len Byte length of context.
+ * @return The status code, 1 for success otherwise 0.
+ */
+int get_rule_descriptor(rule_descriptor_t *rule_descriptor, const int index,
+                        const uint8_t *context, const size_t context_byte_len);
 
 #endif  // _RULE_DESCRIPTOR_H_

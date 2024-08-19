@@ -43,12 +43,49 @@ void test_right_shift(void) {
 
 /* ********************************************************************** */
 
+void test_left_shift(void) {
+  uint8_t      buffer[]        = {0b10011010, 0b01010011, 0b10110111};
+  const size_t buffer_byte_len = 3;
+
+  const uint8_t shifted_buffer_1[]  = {0b00110100, 0b10100111, 0b01101110};
+  const uint8_t shifted_buffer_8[]  = {0b01010011, 0b10110111};
+  const uint8_t shifted_buffer_20[] = {0b01110000};
+
+  uint8_t ptr_buffer[buffer_byte_len];
+  size_t  shifted_buffer_byte_len;
+
+  // Left shift of 1 bit
+  memcpy(ptr_buffer, buffer, buffer_byte_len);
+  shifted_buffer_byte_len = left_shift(ptr_buffer, buffer_byte_len, 1);
+  assert(shifted_buffer_byte_len == 3);
+  assert(memcmp(ptr_buffer, shifted_buffer_1, shifted_buffer_byte_len) == 0);
+
+  // Left shift of 8 bit
+  memcpy(ptr_buffer, buffer, buffer_byte_len);
+  shifted_buffer_byte_len = left_shift(ptr_buffer, buffer_byte_len, 8);
+  assert(shifted_buffer_byte_len == 2);
+  assert(memcmp(ptr_buffer, shifted_buffer_8, shifted_buffer_byte_len) == 0);
+
+  // Left shift of 20 bit
+  memcpy(ptr_buffer, buffer, buffer_byte_len);
+  shifted_buffer_byte_len = left_shift(ptr_buffer, buffer_byte_len, 20);
+  assert(shifted_buffer_byte_len == 1);
+  assert(memcmp(ptr_buffer, shifted_buffer_20, shifted_buffer_byte_len) == 0);
+
+  // Left shift of 25 bit
+  memcpy(ptr_buffer, buffer, buffer_byte_len);
+  shifted_buffer_byte_len = left_shift(ptr_buffer, buffer_byte_len, 25);
+  assert(shifted_buffer_byte_len == 0);
+}
+
+/* ********************************************************************** */
+
 void test_add_byte_to_buffer(void) {
   const uint8_t expected_buffer1[] = {0b01100000};
   const uint8_t expected_buffer2[] = {0b01101101, 0b10000000};
   const uint8_t expected_buffer3[] = {0b01101101, 0b11111111};
 
-  int          bit_pos         = 0;
+  size_t       bit_pos         = 0;
   uint8_t      buffer[2]       = {0};
   const size_t buffer_byte_len = 2;
 
@@ -94,7 +131,7 @@ void test_add_bits_to_buffer(void) {
   const uint8_t expected_buffer4[] = {0b01101101, 0b11000101, 0b01001110,
                                       0b00011111, 0b11111000};
 
-  int          bit_pos         = 0;
+  size_t       bit_pos         = 0;
   uint8_t      buffer[5]       = {0};
   const size_t buffer_byte_len = 5;
 
@@ -139,6 +176,7 @@ void test_bits_counter(void) {
 
 int main(void) {
   test_right_shift();
+  test_left_shift();
   test_add_byte_to_buffer();
   test_add_bits_to_buffer();
   test_bits_counter();

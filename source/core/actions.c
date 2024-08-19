@@ -1,27 +1,38 @@
-#include "core/actions.h"
-#include "core/matching_operators.h"
+#include "actions.h"
+#include "matching_operators.h"
 #include "utils/binary.h"
 
 #include <string.h>
 
 /* ********************************************************************** */
 
-int CDA_not_sent(void) { return 1; }
+int CDA_not_sent(const uint8_t                 *field,
+                 const rule_field_descriptor_t *rule_field_descriptor,
+                 const uint8_t *context, const size_t context_byte_len) {
+  return MO_equal(field, rule_field_descriptor, context, context_byte_len);
+}
 
 /* ********************************************************************** */
 
-int CDA_least_significant_bits(uint8_t *field_residue, const uint8_t *field,
-                               const size_t field_len, const size_t lsb_len) {
-  // >= because if == the right action should be value_sent
-  if (lsb_len >= field_len) {
-    return 0;
-  }
-
+int CDA_least_significant_bits(
+    uint8_t *field_residue, const uint8_t *field,
+    const rule_field_descriptor_t *rule_field_descriptor,
+    const uint8_t *context, const size_t context_byte_len) {
+  size_t  lsb_len;
   size_t  field_byte_len;
   size_t  residue_byte_len;
   uint8_t mask;
 
-  field_byte_len   = BYTE_LENGTH(field_len);
+  // If the MSB of field corresponds to the rule_field_descriptor then we
+  // perform LSB. Else we return 0 as an error, meaning the rule do not
+  // correspond to the current field.
+  if (!MO_most_significant_bits(field, rule_field_descriptor, context,
+                                context_byte_len)) {
+    return 0;
+  }
+
+  lsb_len        = rule_field_descriptor->len - rule_field_descriptor->msb_len;
+  field_byte_len = BYTE_LENGTH(rule_field_descriptor->len);
   residue_byte_len = BYTE_LENGTH(lsb_len);
 
   memcpy(field_residue, field + (field_byte_len - residue_byte_len),
@@ -38,34 +49,36 @@ int CDA_least_significant_bits(uint8_t *field_residue, const uint8_t *field,
 /* ********************************************************************** */
 
 int CDA_mapping_sent(uint8_t *field_residue, const uint8_t *field,
-                     const size_t field_len, const uint16_t list_tv_offset,
-                     const uint8_t *context, const size_t context_len) {
-  if (list_tv_offset >= context_len) {
+                     const rule_field_descriptor_t *rule_field_descriptor,
+                     const uint8_t *context, const size_t context_byte_len) {
+  uint16_t target_value_offset;
+
+  if (rule_field_descriptor->card_target_value == 1) {
+    if (MO_equal(field, rule_field_descriptor, context, context_byte_len)) {
+      *field_residue = 0;
+      return 1;
+    }
     return 0;
   }
 
-  uint8_t  nb_target_value;
-  uint16_t tv_offset;
-  int      is_matching_value;
+  for (uint8_t i = 0; i < rule_field_descriptor->card_target_value; i++) {
+    target_value_offset =
+        ((uint16_t)
+             context[rule_field_descriptor->first_target_value_offset + 2 * i])
+            << 8 |
+        context[rule_field_descriptor->first_target_value_offset + 2 * i + 1];
 
-  nb_target_value = context[list_tv_offset];
-
-  for (uint8_t i = 0; i < nb_target_value; i++) {
-    tv_offset = ((uint16_t) context[list_tv_offset + 1 + 2 * i]) << 8 |
-                context[list_tv_offset + 2 + 2 * i];
-
-    is_matching_value =
-        MO_equal(field, field_len, tv_offset, context, context_len);
-
-    if (is_matching_value) {
+    if (__MO_equal_from_offset(field, rule_field_descriptor,
+                               target_value_offset, context,
+                               context_byte_len)) {
       *field_residue = i;
-      break;
+      return 1;
     }
   }
 
-  return is_matching_value;
+  return 0;
 }
 
 /* ********************************************************************** */
 
-int CDA_value_sent(void) { return 1; }
+int CDA_value_sent(void) { return MO_ignore(); }

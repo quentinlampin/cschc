@@ -6,74 +6,98 @@
 
 /* ********************************************************************** */
 
-void test_get_rule_desc_info(void) {
-  const uint8_t ctx_example[] = {
+void test_get_rule_descriptor(void) {
+  const uint8_t context[] = {
       // Context
-      0, 2, 0, 6, 0, 33,  // 2 Rules
+      0, 4, 0, 10, 0, 21, 0, 30, 0, 35,
 
-      // RuleDesc
-      0, 0, 12, 0, 36, 0, 46, 0, 58, 0, 70, 0, 78, 0, 88, 0, 98, 0, 108, 0, 118,
-      0, 128, 0, 138, 0, 146,  // First rule for compression
-      1, 1, 0,                 // Second rule for no-compression
+      // Rule Descriptor
+      0, 0, 4, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff,                                         // Rule Descriptor 0
+      1, 2, 3, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,  // Rule Descriptor 1
+      2, 0, 1, 0xff, 0xff,                          // Rule Descriptor 2
+      3, 1, 0,                                      // Rule Descriptor 3
 
-      // RuleFieldDesc
-      0x13, 0xcc, 0, 4, 0, 1, 64, 1, 0, 154,  // fid-ipv6-version ; bi/eq/ns
-      0x13, 0xc9, 0, 8, 0, 1, 81, 0, 4, 1, 0,
-      155,  // fid-ipv6-trafficclass ; bi/msb(4)/lsb
-      0x13, 0xc5, 0, 20, 0, 1, 90, 2, 0, 155, 0,
-      158,                             // fid-ipv6-flowlabel ; bi/map/map
-      0x13, 0xc8, 0, 16, 0, 1, 76, 0,  // fid-ipv6-payload-length ; bi/ig/co
-      0x13, 0xc7, 0, 8, 0, 1, 64, 1, 0, 161,  // fid-ipv6-nextheader ; bi/eq/ns
-      0x13, 0xc6, 0, 8, 0, 1, 64, 1, 0, 162,  // fid-ipv6-hoplimit ; bi/eq/ns
-      0x13, 0xc1, 0, 128, 0, 1, 64, 1, 0,
-      163,  // fid-ipv6-sourceaddress ; bi/eq/ns
-      0x13, 0xc4, 0, 128, 0, 1, 64, 1, 0,
-      179,  // fid-ipv6-destinationaddress ; bi/eq/ns
-
-      0x13, 0xce, 0, 16, 0, 1, 64, 1, 0, 195,  // fid-udp-app-port ; bi/eq/ns
-      0x13, 0xd1, 0, 16, 0, 1, 64, 1, 0, 197,  // fid-udp-dev-port ; bi/eq/ns
-      0x13, 0xd2, 0, 16, 0, 1, 76, 0,          // fid-udp-length ; bi/ig/co
-      0x13, 0xd0, 0, 16, 0, 1, 76, 0,          // fid-udp-checksum ; bi/ig/co
-
-      // TargetValue
-      0x06,              // fid-ipv6-version
-      0x0f,              // fid-ipv6-trafficclass
-      0x58, 0x0f,        // fid-ipv6-flowlabel(begin at fid-ipv6-trafficclass)
-      0x09, 0xaa, 0xf2,  // fid-ipv6-flowlabel
-      0x11,              // fid-ipv6-nextheader
-      0x40,              // fid-ipv6-hoplimit
-      0x20, 0x01, 0x0d, 0xb8, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x03,  // fid-ipv6-sourceaddress
-      0x20, 0x01, 0x0d, 0xb8, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x20,  // fid-ipv6-destinationaddress
-      0x90, 0xa0,              // fid-udp-app-port
-      0x16, 0x33,              // fid-udp-dev-port
+      // Rule Field Descriptor
+      // ...
   };
+  const size_t context_byte_len = sizeof(context);
 
-  const size_t ctx_len = sizeof(ctx_example);
+  rule_descriptor_t rule_descriptor;
 
-  rule_desc_t rule_desc;
-  int         next_offset;
+  /**
+   * @brief Get Rule Descriptor 0
+   *
+   * @details :
+   * - Offset                     = 10
+   * - ID                         = 0
+   * - Nature                     = 0 (NATURE_COMPRESSION)
+   * - Card Rule Field Descriptor = 4
+   */
+  assert(get_rule_descriptor(&rule_descriptor, 0, context, context_byte_len));
+  assert(rule_descriptor.offset == 10);
+  assert(rule_descriptor.id == 0);
+  assert(rule_descriptor.nature == NATURE_COMPRESSION);
+  assert(rule_descriptor.card_rule_field_descriptor == 4);
 
-  next_offset = get_rule_desc_info(&rule_desc, 6, ctx_example, ctx_len);
-  assert(next_offset == 9);  // first rule_field_desc_offset
-  assert(rule_desc.offset == 6);
-  assert(rule_desc.id == 0);
-  assert(rule_desc.nature == NATURE_COMPRESSION);
-  assert(rule_desc.card_rule_field_desc == 12);
+  /**
+   * @brief Get Rule Descriptor 3
+   *
+   * @details :
+   * - Offset                     = 35
+   * - ID                         = 3
+   * - Nature                     = 1 (NATURE_NO_COMPRESSION)
+   * - Card Rule Field Descriptor = 0
+   */
+  assert(get_rule_descriptor(&rule_descriptor, 3, context, context_byte_len));
+  assert(rule_descriptor.offset == 35);
+  assert(rule_descriptor.id == 3);
+  assert(rule_descriptor.nature == NATURE_NO_COMPRESSION);
+  assert(rule_descriptor.card_rule_field_descriptor == 0);
 
-  next_offset = get_rule_desc_info(&rule_desc, 33, ctx_example, ctx_len);
-  assert(next_offset == 36);  // first rule_field_desc_offset
-  assert(rule_desc.offset == 33);
-  assert(rule_desc.id == 1);
-  assert(rule_desc.nature == NATURE_NO_COMPRESSION);
-  assert(rule_desc.card_rule_field_desc == 0);
+  /**
+   * @brief Get Rule Descriptor 1
+   *
+   * @details :
+   * - Offset                     = 21
+   * - ID                         = 1
+   * - Nature                     = 2 (NATURE_FRAGMENTATION)
+   * - Card Rule Field Descriptor = 3
+   */
+  assert(get_rule_descriptor(&rule_descriptor, 1, context, context_byte_len));
+  assert(rule_descriptor.offset == 21);
+  assert(rule_descriptor.id == 1);
+  assert(rule_descriptor.nature == NATURE_FRAGMENTATION);
+  assert(rule_descriptor.card_rule_field_descriptor == 3);
+
+  /**
+   * @brief Get Rule Descriptor 2
+   *
+   * @details :
+   * - Offset                     = 30
+   * - ID                         = 2
+   * - Nature                     = 0 (NATURE_COMPRESSION)
+   * - Card Rule Field Descriptor = 0
+   */
+  assert(get_rule_descriptor(&rule_descriptor, 2, context, context_byte_len));
+  assert(rule_descriptor.offset == 30);
+  assert(rule_descriptor.id == 2);
+  assert(rule_descriptor.nature == NATURE_COMPRESSION);
+  assert(rule_descriptor.card_rule_field_descriptor == 1);
+
+  /**
+   * @brief Get Rule Descriptor 9
+   *
+   * @details As there are only 4 Rule Descriptors, getting the 10th one is not
+   * possible.
+   */
+  assert(!get_rule_descriptor(&rule_descriptor, 9, context, context_byte_len));
 }
 
 /* ********************************************************************** */
 
 int main(void) {
-  test_get_rule_desc_info();
+  test_get_rule_descriptor();
 
   printf("All tests passed!\n");
 

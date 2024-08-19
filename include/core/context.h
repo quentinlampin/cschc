@@ -19,14 +19,14 @@
  *                          RULE_DESC2_OFFSET_1, RULE_DESC2_OFFSET_2,
  *                          ...,
  *
- * // RuleDesc
+ * // Rule Descriptor
  * RULE_DESC_ID, RULE_NATURE, NUM_RULE_FIELD_DESC,
  *                 RULE_FIELD_DESC1_OFFSET_1, RULE_FIELD_DESC1_OFFSET_2,
  *                 RULE_FIELD_DESC2_OFFSET_1, RULE_FIELD_DESC2_OFFSET_2,
  *                 ...,
  * ...,
  *
- * // RuleFieldDesc
+ * // Rule Field Descriptor
  * RULE_FIELD_DESC_SID_1, RULE_FIELD_DESC_SID_2, LEN_1, LEN_2, POS_1, POS_2,
  * DIR_MO_CDA, (MSB_LEN_1, MSB_LEN_2), NUM_TARGET_VALUE, TARGET_VALUE1_OFFSET_1,
  * TARGET_VALUE1_OFFSET_2, TARGET_VALUE2_OFFSET_1, TARGET_VALUE2_OFFSET_2, ...,
@@ -39,20 +39,10 @@
  * ...,
  */
 
-#include "core/actions.h"
-#include "core/matching_operators.h"
-#include "core/rule_descriptor.h"
-#include "core/rule_field_descriptor.h"
-
-#include <stddef.h>
-#include <stdint.h>
-
-int get_rule_field_desc_offset_from_fid(int *offset, const uint16_t fid,
-                                        const rule_desc_t *rule_desc,
-                                        const uint8_t     *context,
-                                        const size_t       context_byte_len);
-
-// To do
-int compression_rule_selection(void);
+#include "actions.h"
+#include "matching_operators.h"
+#include "rule_descriptor.h"
+#include "rule_field_descriptor.h"
+#include "schc8724.h"
 
 #endif  // _CONTEXT_H_

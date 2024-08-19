@@ -9,6 +9,10 @@
  */
 #define BYTE_LENGTH(x) (((x) % 8 == 0) ? (x) / 8 : 1 + (x) / 8)
 
+/* ********************************************************************** */
+/*                                Shifting                                */
+/* ********************************************************************** */
+
 /**
  * @brief Performs a right shift of shift_amount on a buffer.
  *
@@ -17,8 +21,22 @@
  * @param shift_amount Amount of bit shift to perform.
  * @return The right-shifted buffer byte length.
  */
-size_t right_shift(uint8_t* buffer, const size_t buffer_byte_len,
-                   int shift_amount);
+size_t right_shift(uint8_t* buffer, size_t buffer_byte_len,
+                   size_t shift_amount);
+
+/**
+ * @brief Performs a left shift of shift_amount on a buffer.
+ *
+ * @param buffer Pointer to the buffer to shift.
+ * @param buffer_byte_len Byte length of the buffer.
+ * @param shift_amount Amount of bit shift to perform.
+ * @return The left-shifted buffer byte length.
+ */
+size_t left_shift(uint8_t* buffer, size_t buffer_byte_len, size_t shift_amount);
+
+/* ********************************************************************** */
+/*                                 Adding                                 */
+/* ********************************************************************** */
 
 /**
  * @brief Adds a uint8_t into a buffer.
@@ -33,9 +51,9 @@ size_t right_shift(uint8_t* buffer, const size_t buffer_byte_len,
  * @remark As content is a uint8_t, it means that the content_len parameter
  * value is between 0 and 8.
  */
-int add_byte_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
-                       int* bit_position, const uint8_t content,
-                       const size_t content_len);
+int add_byte_to_buffer(uint8_t* buffer, size_t buffer_byte_len,
+                       size_t* bit_position, uint8_t content,
+                       size_t content_len);
 
 /**
  * @brief Adds bits into a buffer.
@@ -49,16 +67,41 @@ int add_byte_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
  *
  * @details See int add_byte_to_buffer.
  */
-int add_bits_to_buffer(uint8_t* buffer, const size_t buffer_byte_len,
-                       int* bit_position, const uint8_t* content,
-                       const size_t content_len);
+int add_bits_to_buffer(uint8_t* buffer, size_t buffer_byte_len,
+                       size_t* bit_position, const uint8_t* content,
+                       size_t content_len);
+
+/* ********************************************************************** */
+/*                               Extraction                               */
+/* ********************************************************************** */
+
+/**
+ * @brief Extracts the content of a buffer from a bit position and a bit length.
+ *
+ * @param content Pointer to the extracted content.
+ * @param content_max_byte_len Maximum byte length of content.
+ * @param content_len The bit length to extract.
+ * @param bit_position Pointer to the bit position in the buffer.
+ * @param buffer Pointer to the buffer.
+ * @param buffer_byte_len Byte length of the buffer.
+ * @return The byte length of the extracted content.
+ *
+ * @remark The bit_position is updated thanks to content_len.
+ */
+size_t extract_bits(uint8_t* content, size_t content_max_byte_len,
+                    size_t content_len, size_t* bit_position,
+                    const uint8_t* buffer, size_t buffer_byte_len);
+
+/* ********************************************************************** */
+/*                                Other(s)                                */
+/* ********************************************************************** */
 
 /**
  * @brief Counts the number of bits needed to represent a value.
  *
  * @param value The uint8_t value.
- * @return The number of bits.
+ * @return The corresponding number of bits.
  */
-int bits_counter(uint8_t value);
+size_t bits_counter(uint8_t value);
 
 #endif  // _BINARY_H_

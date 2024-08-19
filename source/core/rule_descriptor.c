@@ -1,18 +1,23 @@
-#include "core/rule_descriptor.h"
+#include "rule_descriptor.h"
 
 /* ********************************************************************** */
 
-int get_rule_desc_info(rule_desc_t *rule_desc, int offset,
-                       const uint8_t *context, const size_t context_len) {
-  // add checks on offset !
-  if (context_len <= offset) {
-    return -1;
+int get_rule_descriptor(rule_descriptor_t *rule_descriptor, const int index,
+                        const uint8_t *context, const size_t context_byte_len) {
+  uint16_t rule_descriptor_offset;
+
+  // context[1] represents the total number of rule descriptor in the context
+  if (index >= context[1] || 2 + 2 * index + 1 >= context_byte_len) {
+    return 0;
   }
 
-  rule_desc->offset               = (uint16_t) offset;
-  rule_desc->id                   = context[offset++];
-  rule_desc->nature               = (nature_t) (context[offset++]);
-  rule_desc->card_rule_field_desc = context[offset++];
+  rule_descriptor_offset =
+      ((uint16_t) context[2 + 2 * index] << 8) | context[2 + 2 * index + 1];
 
-  return offset;
+  rule_descriptor->offset = rule_descriptor_offset;
+  rule_descriptor->id     = context[rule_descriptor_offset++];
+  rule_descriptor->nature = (nature_t) context[rule_descriptor_offset++];
+  rule_descriptor->card_rule_field_descriptor = context[rule_descriptor_offset];
+
+  return 1;
 }
