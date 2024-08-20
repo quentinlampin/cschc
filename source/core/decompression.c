@@ -235,19 +235,32 @@ static int __compression(
   size_t                   extracted_field_residue_byte_len;
   size_t                   decompressed_field_byte_len;
   size_t                   payload_byte_len;
+  uint8_t                  coap_tkl;
+  uint16_t                 coap_option_delta;
+  uint16_t                 coap_option_length;
   uint16_t                 target_value_offset;
   uint8_t                 *extracted_field_residue;
   uint8_t                 *decompressed_field;
   uint8_t                 *payload;
   rule_field_descriptor_t *rule_field_descriptor;
 
-  // To handle differently !
-  uint8_t  coap_tkl;
-  uint16_t coap_option_delta;
-  uint16_t coap_option_length;
-
-  schc_decompression_status   = 1;
-  index_rule_field_descriptor = 0;
+  schc_decompression_status        = 1;
+  index_rule_field_descriptor      = 0;
+  payload_byte_position            = 0;
+  decompressed_field_len           = 0;
+  schc_len_to_decompress           = 0;
+  msb_bit_position                 = 0;
+  extracted_field_residue_byte_len = 0;
+  decompressed_field_byte_len      = 0;
+  payload_byte_len                 = 0;
+  coap_tkl                         = 0x00;
+  coap_option_delta                = 0x0000;
+  coap_option_length               = 0x0000;
+  target_value_offset              = 0x0000;
+  extracted_field_residue          = NULL;
+  decompressed_field               = NULL;
+  payload                          = NULL;
+  rule_field_descriptor            = NULL;
 
   // Allocate rule_field_descriptor from the pool
   rule_field_descriptor =

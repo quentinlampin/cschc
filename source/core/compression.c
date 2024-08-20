@@ -254,6 +254,16 @@ static int __compression(uint8_t*                    schc_packet,
   schc_compression_status     = 1;
   index_rule_field_descriptor = 0;
   packet_bit_position         = 0;
+  payload_byte_position       = 0;
+  schc_len_to_add             = 0;
+  field_residue_byte_len      = 0;
+  extracted_field_byte_len    = 0;
+  coap_tkl                    = 0x00;
+  coap_option_delta           = 0x0000;
+  coap_option_length          = 0x0000;
+  field_residue               = NULL;
+  extracted_field             = NULL;
+  rule_field_descriptor       = NULL;
 
   // Allocate rule_field_descriptor from the pool
   rule_field_descriptor =
