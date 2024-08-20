@@ -419,11 +419,19 @@ void test_CDA_value_sent(void) {
 
 /* ********************************************************************** */
 
+void test_CDA_compute(void) {
+  // Nothing to test
+  assert(CDA_compute());
+}
+
+/* ********************************************************************** */
+
 int main(void) {
   test_CDA_not_sent();
   test_CDA_least_significant_bits();
   test_CDA_mapping_sent();
   test_CDA_value_sent();
+  test_CDA_compute();
 
   printf("All tests passed!\n");
 
