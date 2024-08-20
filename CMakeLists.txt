@@ -36,6 +36,10 @@ add_library(cschc
 )
 
 
+add_executable(main ${PROJECT_SOURCE_DIR}/source/main.c)
+target_link_libraries(main PUBLIC cschc)
+
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     # Tests
     enable_testing()
