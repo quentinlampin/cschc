@@ -69,8 +69,7 @@ static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
  * @param packet Pointer to the packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
  * @param packet_bit_position Pointer to the current bit position of the packet.
- * @param schc_packet_bit_position Pointer to the current bit position of the
- * SCHC packet.
+ * @param schc_packet_bit_position Bit position of the SCHC packet.
  * @param packet_direction Packet Direction Indicator.
  * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
  * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
@@ -87,6 +86,20 @@ static int __compression(uint8_t *packet, const size_t packet_max_byte_len,
                          const size_t                schc_packet_byte_len,
                          const rule_descriptor_t    *rule_descriptor,
                          const uint8_t *context, const size_t context_byte_len);
+
+/**
+ * @brief Move SCHC bit position according to the Variable-Length encoded value.
+ *
+ * @param schc_packet_bit_position Pointer to the current bit position of the
+ * SCHC packet.
+ * @param rule_field_descriptor Pointer to the Rule Field Descriptor of the
+ * current field.
+ * @param decompressed_field_len Bit length of the decompressed field.
+ */
+static void __variable_length_decoding(
+    size_t                        *schc_packet_bit_position,
+    const rule_field_descriptor_t *rule_field_descriptor,
+    const size_t                   decompressed_field_len);
 
 /* ********************************************************************** */
 /*                        Main decompress function                        */
@@ -292,7 +305,6 @@ static int __compression(
                  SID_COAP_OPTION_LENGTH_EXTENDED) {
         decompressed_field_len = get_coap_option_bit_length(
             coap_option_length, rule_field_descriptor->sid);
-
       } else if (rule_field_descriptor->sid == SID_COAP_OPTION_VALUE) {
         decompressed_field_len = get_coap_option_bit_length(
             coap_option_length, rule_field_descriptor->sid);
@@ -306,22 +318,13 @@ static int __compression(
     decompressed_field =
         (uint8_t *) pool_alloc(sizeof(uint8_t) * decompressed_field_byte_len);
 
-    // Variable-Length Decoding
-    if ((rule_field_descriptor->cda == CDA_LSB ||
-         rule_field_descriptor->cda == CDA_VALUE_SENT) &&
-        rule_field_descriptor->len == 0 && schc_decompression_status) {
-      if (decompressed_field_len < 15) {
-        schc_packet_bit_position += 4;
-      } else if (decompressed_field_len < 255) {
-        schc_packet_bit_position += 12;
-      } else {
-        schc_packet_bit_position += 28;
-      }
-    }
-
     if (!schc_decompression_status) {
       return schc_decompression_status;
     }
+
+    // Variable-Length Decoding
+    __variable_length_decoding(&schc_packet_bit_position, rule_field_descriptor,
+                               decompressed_field_len);
 
     switch (rule_field_descriptor->cda) {
       case CDA_LSB:
@@ -474,4 +477,23 @@ static int __compression(
   pool_dealloc(payload, sizeof(uint8_t) * payload_byte_len);
 
   return schc_decompression_status;
+}
+
+/* ********************************************************************** */
+
+static void __variable_length_decoding(
+    size_t                        *schc_packet_bit_position,
+    const rule_field_descriptor_t *rule_field_descriptor,
+    const size_t                   decompressed_field_len) {
+  if ((rule_field_descriptor->cda == CDA_LSB ||
+       rule_field_descriptor->cda == CDA_VALUE_SENT) &&
+      rule_field_descriptor->len == 0) {
+    if (decompressed_field_len < 15) {
+      *schc_packet_bit_position += 4;
+    } else if (decompressed_field_len < 255) {
+      *schc_packet_bit_position += 12;
+    } else {
+      *schc_packet_bit_position += 28;
+    }
+  }
 }
