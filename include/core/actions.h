@@ -66,6 +66,16 @@ int CDA_mapping_sent(uint8_t *field_residue, const uint8_t *field,
  */
 int CDA_value_sent(void);
 
+/**
+ * @brief Action which means the field needs to be computed.
+ *
+ * @details This action is important only for decompression as, during
+ * compression, the corresponding field with this action is elided (associated
+ * with ignore MO). However, during decompression, we need to recompute the
+ * initial value.
+ *
+ * @return 1 for success.
+ */
 int CDA_compute(void);  // not implemented yet
 
 #endif  // _COMPRESSION_DECOMPRESSION_ACTIONS_H_

@@ -82,3 +82,7 @@ int CDA_mapping_sent(uint8_t *field_residue, const uint8_t *field,
 /* ********************************************************************** */
 
 int CDA_value_sent(void) { return MO_ignore(); }
+
+/* ********************************************************************** */
+
+int CDA_compute(void) { return MO_ignore(); }
