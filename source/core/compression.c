@@ -379,8 +379,9 @@ static int __compression(uint8_t*                    schc_packet,
       case CDA_COMPUTE:
         // Update the bit length
         schc_len_to_add = 0;
-        // To do:
-        // schc_compression_status = CDA_compute();
+
+        // Apply Compute
+        schc_compression_status = CDA_compute();
         break;
 
       default:  // CDA_VALUE_SENT
