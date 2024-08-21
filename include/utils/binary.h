@@ -104,4 +104,23 @@ size_t extract_bits(uint8_t* content, size_t content_max_byte_len,
  */
 size_t bits_counter(uint8_t value);
 
+/**
+ * @brief Splits a uint16_t value into two uint8_t values.
+ *
+ * @param left_byte Pointer to store the left byte.
+ * @param right_byte Pointer to store the right byte.
+ * @param value The uint16_t value to split.
+ */
+void split_uint16_t(uint8_t* left_byte, uint8_t* right_byte,
+                    const uint16_t value);
+
+/**
+ * @brief Merges two uint8_t values into a uint16_t value.
+ *
+ * @param left_byte The left byte.
+ * @param right_byte The right byte.
+ * @return The merged uint16_t value.
+ */
+uint16_t merge_uint8_t(const uint8_t left_byte, const uint8_t right_byte);
+
 #endif  // _BINARY_H_

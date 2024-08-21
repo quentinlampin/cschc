@@ -213,3 +213,17 @@ size_t bits_counter(uint8_t value) {
 
   return count;
 }
+
+/* ********************************************************************** */
+
+void split_uint16_t(uint8_t* left_byte, uint8_t* right_byte,
+                    const uint16_t value) {
+  *left_byte  = (uint8_t) (value >> 8);
+  *right_byte = (uint8_t) (value & 0xff);
+}
+
+/* ********************************************************************** */
+
+uint16_t merge_uint8_t(const uint8_t left_byte, const uint8_t right_byte) {
+  return ((uint16_t) (left_byte << 8)) | right_byte;
+}
