@@ -23,4 +23,24 @@
 #define SID_UDP_LENGTH 5074
 #define SID_UDP_CHECKSUM 5072
 
+/**
+ * @brief Determines the UDP Checksum Value.
+ *
+ * @param checksum Pointer to store the computed checksum.
+ * @param checksum_byte_len Byte length of the checksum.
+ * @param packet Pointer to the packet data.
+ * @param packet_byte_len Byte length of the packet.
+ * @param is_ipv6 Flag indicating whether the packet is IPv6 (1) or IPv4 (0).
+ *
+ * @details This function calculates the UDP checksum for the given packet.
+ * The checksum is computed according to the UDP specification, taking into
+ * account the Pseudo-Header for only IPv6 yet. The result is stored in
+ * the provided checksum buffer.
+ *
+ * @details To do : IPv4 case.
+ */
+void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
+                  const uint8_t* packet, const size_t packet_byte_len,
+                  int is_ipv6);
+
 #endif  // _UDP_H_
