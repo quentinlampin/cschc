@@ -5,6 +5,8 @@
 #include <string.h>
 
 /* ********************************************************************** */
+/*                                Shifting                                */
+/* ********************************************************************** */
 
 void test_right_shift(void) {
   uint8_t      buffer[]        = {0b10011010, 0b01010011, 0b10110111};
@@ -78,6 +80,8 @@ void test_left_shift(void) {
   assert(shifted_buffer_byte_len == 0);
 }
 
+/* ********************************************************************** */
+/*                                 Adding                                 */
 /* ********************************************************************** */
 
 void test_add_byte_to_buffer(void) {
@@ -162,6 +166,115 @@ void test_add_bits_to_buffer(void) {
 }
 
 /* ********************************************************************** */
+/*                               Extraction                               */
+/* ********************************************************************** */
+
+void test_extract_bits(void) {
+  uint8_t extracted_content[5];
+  size_t  bit_position = 0;
+
+  const uint8_t buffer1[] = {0b01101101, 0b11000101, 0b01001110, 0b00011111,
+                             0b11111000};
+  const size_t  buffer1_byte_len = sizeof(buffer1);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 4 bits from bit_pos = 0 :
+   * - value = {0b0110}
+   * - bit_position = 4
+   * - return 1
+   */
+  const uint8_t expected_buffer1_1[] = {0b0110};
+  assert(extract_bits(extracted_content, 5, 4, &bit_position, buffer1,
+                      buffer1_byte_len));
+  assert(bit_position == 4);
+  assert(memcmp(extracted_content, expected_buffer1_1, 1) == 0);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 8 bits from bit_pos = 4 :
+   * - value = {0b11011100}
+   * - bit_position = 4 + 8 = 12
+   * - return 1
+   */
+  const uint8_t expected_buffer1_2[] = {0b11011100};
+  assert(extract_bits(extracted_content, 5, 8, &bit_position, buffer1,
+                      buffer1_byte_len));
+  assert(bit_position == 12);
+  assert(memcmp(extracted_content, expected_buffer1_2, 1) == 0);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 2 bits from bit_pos = 12 :
+   * - value = {0b01}
+   * - bit_position = 12 + 2 = 14
+   * - return 1
+   */
+  const uint8_t expected_buffer1_3[] = {0b01};
+  assert(extract_bits(extracted_content, 5, 2, &bit_position, buffer1,
+                      buffer1_byte_len));
+  assert(bit_position == 14);
+  assert(memcmp(extracted_content, expected_buffer1_3, 1) == 0);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 18 bits from bit_pos = 14 :
+   * - value = {0b01, 0b01001110, 0b00011111}
+   * - bit_position = 14 + 18 = 32
+   * - return 1
+   */
+  const uint8_t expected_buffer1_4[] = {0b01, 0b01001110, 0b00011111};
+  assert(extract_bits(extracted_content, 5, 18, &bit_position, buffer1,
+                      buffer1_byte_len));
+  assert(bit_position == 32);
+  assert(memcmp(extracted_content, expected_buffer1_4, 1) == 0);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 9 bits from bit_pos = 32 :
+   * - value = null
+   * - bit_position = 32
+   * - return 0 (Only 8 bits remain from the buffer)
+   */
+  assert(!extract_bits(extracted_content, 5, 32, &bit_position, buffer1,
+                       buffer1_byte_len));
+  assert(bit_position == 32);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 8 bits from bit_pos = 32 :
+   * - value = {0b11111000}
+   * - bit_position = 14 + 18 = 32
+   * - return 1
+   */
+  const uint8_t expected_buffer1_5[] = {0b11111000};
+  assert(extract_bits(extracted_content, 5, 8, &bit_position, buffer1,
+                      buffer1_byte_len));
+  assert(bit_position == 40);
+  assert(memcmp(extracted_content, expected_buffer1_5, 1) == 0);
+
+  /**
+   * @brief Extraction on buffer1 = 0110110111000101010011100001111111111000.
+   *
+   * @details Extract 1 bit from bit_pos = 40 :
+   * - value = null
+   * - bit_position = 40
+   * - return 0 (The end of buffer has been reached)
+   */
+  assert(!extract_bits(extracted_content, 5, 1, &bit_position, buffer1,
+                       buffer1_byte_len));
+  assert(bit_position == 40);
+}
+
+/* ********************************************************************** */
+/*                                Other(s)                                */
+/* ********************************************************************** */
 
 void test_bits_counter(void) {
   assert(bits_counter(0x00) == 1);
@@ -174,12 +287,99 @@ void test_bits_counter(void) {
 
 /* ********************************************************************** */
 
+void test_split_uint16_t(void) {
+  uint8_t left, right;
+
+  /**
+   * @brief Split on value1 = 0x0000
+   *
+   * @details left = 0x00 and right = 0x00
+   */
+  const uint16_t value1 = 0x0000;
+  split_uint16_t(&left, &right, value1);
+  assert(left == 0x00 && right == 0x00);
+
+  /**
+   * @brief Split on value2 = 0x0001
+   *
+   * @details left = 0x00 and right = 0x01
+   */
+  const uint16_t value2 = 0x0001;
+  split_uint16_t(&left, &right, value2);
+  assert(left == 0x00 && right == 0x01);
+
+  /**
+   * @brief Split on value3 = 0x1000
+   *
+   * @details left = 0x10 and right = 0x00
+   */
+  const uint16_t value3 = 0x1000;
+  split_uint16_t(&left, &right, value3);
+  assert(left == 0x10 && right == 0x00);
+
+  /**
+   * @brief Split on value4 = 0xabcd
+   *
+   * @details left = 0xab and right = 0xcd
+   */
+  const uint16_t value4 = 0xabcd;
+  split_uint16_t(&left, &right, value4);
+  assert(left == 0xab && right == 0xcd);
+}
+
+/* ********************************************************************** */
+
+void test_merge_uint8_t(void) {
+  uint16_t value;
+
+  /**
+   * @brief Merge on left1 = 0x00 and right1 = 0x00
+   *
+   * @details value = 0x0000
+   */
+  const uint8_t left1 = 0x00, right1 = 0x00;
+  value = merge_uint8_t(left1, right1);
+  assert(value == 0x0000);
+
+  /**
+   * @brief Merge on left2 = 0x00 and right2 = 0x01
+   *
+   * @details value = 0x0001
+   */
+  const uint8_t left2 = 0x00, right2 = 0x01;
+  value = merge_uint8_t(left2, right2);
+  assert(value == 0x0001);
+
+  /**
+   * @brief Merge on left3 = 0x10 and right3 = 0x00
+   *
+   * @details value = 0x1000
+   */
+  const uint8_t left3 = 0x10, right3 = 0x00;
+  value = merge_uint8_t(left3, right3);
+  assert(value == 0x1000);
+
+  /**
+   * @brief Merge on left4 = 0xab and right4 = 0xcd
+   *
+   * @details value = 0xabcd
+   */
+  const uint8_t left4 = 0xab, right4 = 0xcd;
+  value = merge_uint8_t(left4, right4);
+  assert(value == 0xabcd);
+}
+
+/* ********************************************************************** */
+
 int main(void) {
   test_right_shift();
   test_left_shift();
   test_add_byte_to_buffer();
   test_add_bits_to_buffer();
+  test_extract_bits();
   test_bits_counter();
+  test_split_uint16_t();
+  test_merge_uint8_t();
 
   printf("All tests passed!\n");
 
