@@ -10,23 +10,23 @@ memory_pool_t *pool = NULL;
 /* ********************************************************************** */
 
 memory_pool_t *create_memory_pool(void) {
-  memory_pool_t *pool = (memory_pool_t *) malloc(sizeof(memory_pool_t));
-  if (pool == NULL) {
+  memory_pool_t *_pool = (memory_pool_t *) malloc(sizeof(memory_pool_t));
+  if (_pool == NULL) {
     return NULL;
   }
 
-  pool->memory = (uint8_t *) malloc(POOL_SIZE);
-  if (pool->memory == NULL) {
-    free(pool);
+  _pool->memory = (uint8_t *) malloc(POOL_SIZE);
+  if (_pool->memory == NULL) {
+    free(_pool);
     return NULL;
   }
 
   // Init
-  pool->used = 0;
-  pool->size = POOL_SIZE;
-  memset(pool->memory, 0x00, POOL_SIZE);
+  _pool->used = 0;
+  _pool->size = POOL_SIZE;
+  memset(_pool->memory, 0x00, POOL_SIZE);
 
-  return pool;
+  return _pool;
 }
 
 /* ********************************************************************** */
