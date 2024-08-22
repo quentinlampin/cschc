@@ -7,7 +7,12 @@
 #define POOL_SIZE (1024 * 1024)  // 1MB
 
 /**
- * @brief Struct which defines a memory pool.
+ * @brief Struct that defines a memory pool.
+ *
+ * @details This memory pool implementation is not fragmentation-friendly.
+ * Indeed, no realignment is performed. Therefore, allocation/deallocation from
+ * the pool must be done in the correct order to prevent data fragmentation. As
+ * the pool is mainly used internally, we should avoid this issue.
  */
 typedef struct {
   uint8_t *memory;  // Dynamically allocated space

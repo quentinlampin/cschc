@@ -21,6 +21,7 @@ memory_pool_t *create_memory_pool(void) {
     return NULL;
   }
 
+  // Init
   pool->used = 0;
   pool->size = POOL_SIZE;
   memset(pool->memory, 0x00, POOL_SIZE);
