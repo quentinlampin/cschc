@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 /**
- * @brief Computes the byte length associated with a bit length.
+ * @brief Macro that computes the byte length associated with a bit length.
  */
 #define BYTE_LENGTH(x) (((x) % 8 == 0) ? (x) / 8 : 1 + (x) / 8)
 
@@ -84,13 +84,13 @@ int add_bits_to_buffer(uint8_t* buffer, size_t buffer_byte_len,
  * @param bit_position Pointer to the bit position in the buffer.
  * @param buffer Pointer to the buffer.
  * @param buffer_byte_len Byte length of the buffer.
- * @return The byte length of the extracted content.
+ * @return The status code, 1 for success otherwise 0.
  *
- * @remark The bit_position is updated thanks to content_len.
+ * @details The bit_position is updated thanks to content_len.
  */
-size_t extract_bits(uint8_t* content, size_t content_max_byte_len,
-                    size_t content_len, size_t* bit_position,
-                    const uint8_t* buffer, size_t buffer_byte_len);
+int extract_bits(uint8_t* content, size_t content_max_byte_len,
+                 size_t content_len, size_t* bit_position,
+                 const uint8_t* buffer, size_t buffer_byte_len);
 
 /* ********************************************************************** */
 /*                                Other(s)                                */
