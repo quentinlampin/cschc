@@ -31,6 +31,7 @@ add_library(cschc
     ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
     ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
     ${PROJECT_SOURCE_DIR}/source/core/actions.c
+    ${PROJECT_SOURCE_DIR}/source/core/context.c
     ${PROJECT_SOURCE_DIR}/source/core/compression.c
     ${PROJECT_SOURCE_DIR}/source/core/decompression.c
 )
