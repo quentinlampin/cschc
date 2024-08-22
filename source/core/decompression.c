@@ -101,6 +101,26 @@ static void __variable_length_decoding(
     const rule_field_descriptor_t *rule_field_descriptor,
     const size_t                   decompressed_field_len);
 
+/**
+ * @brief Update the Compute Values in the Packet.
+ *
+ * @param packet Pointer to the Packet.
+ * @param packet_max_byte_len Maximum byte length of the packet.
+ * @param packet_bit_position Pointer to the current bit position of the packet.
+ * @param compute_entries Pointer to the Compute Entries which stores the
+ * Compute values whihc have to be update.
+ * @param card_compute_entries Number of compute entries to consider.
+ * @param rule_descriptor Pointer to the current Rule Descriptor.
+ * @param context Pointer to the SCHC Contxt.
+ * @param context_byte_len Byte length of the Context.
+ * @return The decompression status code, 1 for success, otherwise 0.
+ */
+static int __update_compute_entries(
+    uint8_t *packet, const size_t packet_max_byte_len,
+    const size_t packet_bit_position, compute_entry_t *compute_entries,
+    const int card_compute_entries, const rule_descriptor_t *rule_descriptor,
+    const uint8_t *context, const size_t context_byte_len);
+
 /* ********************************************************************** */
 /*                        Main decompress function                        */
 /* ********************************************************************** */
@@ -241,6 +261,8 @@ static int __compression(
     const uint8_t *context, const size_t context_byte_len) {
   int                      schc_decompression_status;
   int                      index_rule_field_descriptor;
+  int                      index_compute_entry;
+  int                      card_compute_entries;
   size_t                   payload_byte_position;
   size_t                   decompressed_field_len;
   size_t                   schc_len_to_decompress;
@@ -256,9 +278,13 @@ static int __compression(
   uint8_t                 *decompressed_field;
   uint8_t                 *payload;
   rule_field_descriptor_t *rule_field_descriptor;
+  compute_entry_t         *compute_entries;
 
-  schc_decompression_status        = 1;
-  index_rule_field_descriptor      = 0;
+  schc_decompression_status   = 1;
+  index_rule_field_descriptor = 0;
+  index_compute_entry         = 0;
+  card_compute_entries =
+      get_cardinal_compute_entries(rule_descriptor, context, context_byte_len);
   payload_byte_position            = 0;
   decompressed_field_len           = 0;
   schc_len_to_decompress           = 0;
@@ -274,6 +300,13 @@ static int __compression(
   decompressed_field               = NULL;
   payload                          = NULL;
   rule_field_descriptor            = NULL;
+  compute_entries                  = NULL;
+
+  // Allocate compute_entries from the pool
+  if (card_compute_entries > 0) {
+    compute_entries = (compute_entry_t *) pool_alloc(sizeof(compute_entry_t) *
+                                                     card_compute_entries);
+  }
 
   // Allocate rule_field_descriptor from the pool
   rule_field_descriptor =
@@ -411,6 +444,13 @@ static int __compression(
         break;
 
       case CDA_COMPUTE:
+        // Update current Compute Entry
+        compute_entries[index_compute_entry].bit_position =
+            *packet_bit_position;
+        compute_entries[index_compute_entry].index_rule_field_descriptor =
+            index_rule_field_descriptor;
+
+        index_compute_entry++;
         break;
 
       default:  // CDA_VALUE_SENT
@@ -440,7 +480,7 @@ static int __compression(
 
     // To do : Change this statement in order to add CDA_COMPUTE feature
     // Add decompressed_field into packet
-    if (rule_field_descriptor->cda != CDA_COMPUTE &&
+    if (/*rule_field_descriptor->cda != CDA_COMPUTE &&*/
         schc_decompression_status) {
       add_bits_to_buffer(packet, packet_max_byte_len, packet_bit_position,
                          decompressed_field, decompressed_field_len);
@@ -476,6 +516,18 @@ static int __compression(
   // Deallocate payload from the pool
   pool_dealloc(payload, sizeof(uint8_t) * payload_byte_len);
 
+  // Handle Compute Entries
+  if (card_compute_entries > 0) {
+    // Update Compute entries
+    schc_decompression_status = __update_compute_entries(
+        packet, packet_max_byte_len, *packet_bit_position, compute_entries,
+        card_compute_entries, rule_descriptor, context, context_byte_len);
+
+    // Deallocate compute_entries from the pool
+    pool_dealloc(compute_entries,
+                 sizeof(compute_entry_t) * card_compute_entries);
+  }
+
   return schc_decompression_status;
 }
 
@@ -496,4 +548,74 @@ static void __variable_length_decoding(
       *schc_packet_bit_position += 28;
     }
   }
+}
+
+/* ********************************************************************** */
+
+static int __update_compute_entries(
+    uint8_t *packet, const size_t packet_max_byte_len,
+    const size_t packet_bit_position, compute_entry_t *compute_entries,
+    const int card_compute_entries, const rule_descriptor_t *rule_descriptor,
+    const uint8_t *context, const size_t context_byte_len) {
+  int                      schc_decompression_status;
+  int                      index_compute_entry;
+  size_t                   current_bit_position;
+  size_t                   tmp_value;
+  rule_field_descriptor_t *rule_field_descriptor;
+  uint8_t                 *compute_value;
+
+  schc_decompression_status = 1;
+  index_compute_entry       = 0;
+  current_bit_position      = 0;
+  tmp_value                 = 0;
+  rule_field_descriptor     = NULL;
+  compute_value             = NULL;
+
+  // Allocate rule_field_descriptor from the pool
+  rule_field_descriptor =
+      (rule_field_descriptor_t *) pool_alloc(sizeof(rule_field_descriptor_t));
+
+  while (index_compute_entry < card_compute_entries &&
+         schc_decompression_status) {
+    // Get Rule Field Descriptor
+    schc_decompression_status = get_rule_field_descriptor(
+        rule_field_descriptor,
+        compute_entries[index_compute_entry].index_rule_field_descriptor,
+        rule_descriptor->offset, context, context_byte_len);
+
+    if (rule_field_descriptor->sid == SID_IPV6_PAYLOAD_LENGTH ||
+        rule_field_descriptor->sid == SID_UDP_LENGTH ||
+        rule_field_descriptor->sid == SID_UDP_CHECKSUM) {
+      // Allocate compute_value from the pool
+      compute_value = (uint8_t *) pool_alloc(
+          sizeof(uint8_t) * 2);  // IPv6 Payload Length, UDP Length and UDP
+                                 // Checksum needs only 2 bytes.
+
+      current_bit_position = compute_entries[index_compute_entry].bit_position;
+
+      if (rule_field_descriptor->sid == SID_UDP_CHECKSUM) {
+        udp_checksum(compute_value, 2, packet, packet_max_byte_len, 1);
+      } else {
+        tmp_value        = BYTE_LENGTH(packet_bit_position) - 40;
+        compute_value[0] = (uint8_t) ((tmp_value >> 8) & 0xff);
+        compute_value[1] = (uint8_t) (tmp_value & 0xff);
+      }
+
+      schc_decompression_status =
+          add_bits_to_buffer(packet, packet_max_byte_len, &current_bit_position,
+                             compute_value, 16);
+
+      // Deallocate compute_value from the pool
+      pool_dealloc(compute_value, sizeof(uint8_t) * 2);
+    } else {
+      schc_decompression_status = 0;
+    }
+
+    index_compute_entry++;
+  }
+
+  // Deallocate rule_field_descriptor from the pool
+  pool_dealloc(rule_field_descriptor, sizeof(rule_field_descriptor_t));
+
+  return schc_decompression_status;
 }
