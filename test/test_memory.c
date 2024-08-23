@@ -7,7 +7,7 @@
 
 /* ********************************************************************** */
 
-void test_alloc_dealloc() {
+void test_alloc_dealloc(void) {
   /**
    * @brief Test if the pool allocation does not generate a NULL pointer.
    * Additionally, verify the pool->used size in parallel with allocation.
@@ -89,7 +89,7 @@ void test_segmentation_fault(void) {
 
 /* ********************************************************************** */
 
-int main() {
+int main(void) {
   init_memory_pool();
 
   test_alloc_dealloc();
