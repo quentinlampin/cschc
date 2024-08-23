@@ -8,16 +8,25 @@
 /*                          UDP Header functions                          */
 /* ********************************************************************** */
 
+/**
+ * @brief Calculate the Checksum for a specific range of data.
+ *
+ * @param checksum Pointer to the checksum value.
+ * @param data Pointer to the data.
+ * @param data_byte_length Byte length of data.
+ */
+static void __calculate_checksum(uint32_t* checksum, const uint8_t* data,
+                                 size_t data_byte_length);
+
 void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
                   const uint8_t* packet, const size_t packet_byte_len,
                   int is_ipv6) {
   size_t   ip_addresses_byte_len;
-  size_t   protocol_id_byte_len;
-  size_t   udp_length_byte_len;
-  size_t   pseudo_header_byte_len;
-  uint16_t checksum_value;
+  uint16_t carry;
   uint16_t udp_length_value;
-  uint64_t sum;
+  uint32_t pseudo_header_checksum;
+  uint32_t udp_packet_checksum;
+  uint64_t checksum_value;
 
   if (is_ipv6) {
     /**
@@ -25,67 +34,80 @@ void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
      * following elements:
      * - IPv6 Source Address
      * - IPv6 Destination Address
-     * - Protocol ID (on 16 bits)
-     * - UDP Length
-     * - UDP Header
-     * - UDP Body
-     *
-     * @remark The only variable part is the UDP Body. Indeed, we cannot predict
-     * the length of this part. However, we can deduce it from the UDP Length
-     * Value.
-     *
-     * @details If the UDP Body Length is odd, then one 0x00 byte is added in
-     * the calculation of the Pseudo-Header.
+     * - Protocol ID (on 32 bits)
+     * - UDP Length (on 32 bits)
      */
 
+    // 1. Init Pseudo-Header Checksum
+    pseudo_header_checksum = 0;
+
+    // 2. Add IPv6 Addresses Checksum
     ip_addresses_byte_len = 32;
-    protocol_id_byte_len  = 2;
-    udp_length_byte_len   = 2;
-    checksum_value        = 0;
-    sum                   = 0;
+    __calculate_checksum(&pseudo_header_checksum, packet + 8,
+                         ip_addresses_byte_len);
 
+    // 3. Determine UDP Length from the packet
     udp_length_value = merge_uint8_t(
-        packet[44],
-        packet[45]);  // 44 and 45 are the byte positions which represent the
-                      // UDP Length in an IPv6 + UDP protocol stack
+        packet[44],   // 44 and 45 are the byte positions which represent the
+        packet[45]);  // UDP Length in an IPv6 + UDP protocol stack
 
-    pseudo_header_byte_len = ip_addresses_byte_len + protocol_id_byte_len +
-                             udp_length_byte_len + udp_length_value;
+    // 4.   UDP Length + Protocol ID :
+    // 4.1. Allocate udp_length_protocol_id from the pool
+    uint8_t* udp_length_protocol_id =
+        (uint8_t*) pool_alloc(sizeof(uint8_t) * 8);  // 4 bytes for each
+    memset(udp_length_protocol_id, 0x00, 8);
 
-    // Protocol ID
-    sum += 0x0011;
+    // 4.2. Fill UDP Length
+    split_uint16_t(udp_length_protocol_id + 2, udp_length_protocol_id + 3,
+                   udp_length_value);
 
-    // UDP Length
-    sum += udp_length_value;
+    // 4.3. Fill Protocol ID
+    udp_length_protocol_id[7] = 0x11;
 
-    // IPv6 Source Address + IPv6 Destination Address + UDP Header
-    // + UDP Body(-1)
-    for (int index = 0; index < ip_addresses_byte_len + udp_length_value - 2;
-         index += 2) {
-      sum += merge_uint8_t(packet[8 + index], packet[8 + index + 1]);
-    }
+    // 4.4. Determine Checksum
+    __calculate_checksum(&pseudo_header_checksum, udp_length_protocol_id, 8);
 
-    // Last 16-bit of UDP Body
-    if (pseudo_header_byte_len % 2 == 0) {
-      sum += merge_uint8_t(packet[packet_byte_len - 2],
-                           packet[packet_byte_len - 1]);
+    // 4.5. Deallocate udp_length_protocol_id from the pool
+    pool_dealloc(udp_length_protocol_id, sizeof(uint8_t) * 8);
+
+    /**
+     * @brief The second part needed for UDP Checksum is the UDP Packet, i.e.
+     UDP Header and UDP Payload.
+     *
+     * @remark The only variable part is the UDP Payload. Indeed, we cannot
+     predict the length of this part. However, we can deduce it from the UDP
+     Length Value.
+     *
+     * @details If the UDP Payload Length is odd, then one 0x00 byte is added in
+     the calculation of the UDP Packet Checksum.
+     */
+
+    // 1. Init UDP Packet Checksum
+    udp_packet_checksum = 0;
+    __calculate_checksum(
+        &udp_packet_checksum,
+        packet + 40,            // 40 is the byte position of the beginning of
+        udp_length_value - 2);  // the UDP Header in an IPv6 Stack
+
+    // 2. Handle last 16-bit of UDP Payload
+    if (udp_length_value % 2 == 0) {
+      __calculate_checksum(&udp_packet_checksum, packet + (packet_byte_len - 2),
+                           2);
     } else {
-      sum += merge_uint8_t(packet[packet_byte_len - 1], 0x00);
+      udp_packet_checksum += merge_uint8_t(packet[packet_byte_len - 1], 0x00);
+      carry               = udp_packet_checksum >> 16;
+      udp_packet_checksum = (udp_packet_checksum + carry) & 0xffff;
     }
 
-    // Shrink uint64_t format to uint16_t
-    while (sum >> 16) {
-      sum = (sum & 0xffff) + (sum >> 16);
-    }
+    // Sum both checksum
+    checksum_value = pseudo_header_checksum + udp_packet_checksum;
 
-    // Determine the 16-bit checksum value
-    checksum_value = ~sum;
+    // Normalize to uint16_t checksum_value
+    carry          = checksum_value >> 16;
+    checksum_value = (checksum_value + carry) & 0xffff;
+    checksum_value = ~checksum_value & 0xffff;
 
-    if (checksum_value == 0x0000) {
-      checksum_value = 0xffff;
-    }
-
-    split_uint16_t(checksum, checksum + 1, checksum_value);
+    split_uint16_t(checksum, checksum + 1, (uint16_t) checksum_value);
   } else {  // IPv4 Stack
     // Not Implemented yet
     memset(checksum, 0xff, checksum_byte_len);
@@ -141,5 +163,20 @@ size_t get_coap_option_bit_length(const uint16_t option, const uint16_t sid) {
     return 8 * option;
   } else {  // Might not reach this statement
     return 0;
+  }
+}
+
+/* ********************************************************************** */
+/*                             Static function                            */
+/* ********************************************************************** */
+
+static void __calculate_checksum(uint32_t* checksum, const uint8_t* data,
+                                 size_t data_byte_length) {
+  uint16_t carry;
+
+  for (size_t i = 0; i < data_byte_length; i += 2) {
+    *checksum += merge_uint8_t(data[i], data[i + 1]);
+    carry     = *checksum >> 16;
+    *checksum = (*checksum + carry) & 0xffff;
   }
 }
