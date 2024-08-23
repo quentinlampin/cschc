@@ -9,7 +9,7 @@
 /* ********************************************************************** */
 
 /**
- * @brief Calculate the Checksum for a specific range of data.
+ * @brief Calculates the Checksum for a specific range of data.
  *
  * @param checksum Pointer to the checksum value.
  * @param data Pointer to the data.
@@ -17,6 +17,8 @@
  */
 static void __calculate_checksum(uint32_t* checksum, const uint8_t* data,
                                  size_t data_byte_length);
+
+/* ********************************************************************** */
 
 void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
                   const uint8_t* packet, const size_t packet_byte_len,
@@ -30,15 +32,15 @@ void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
 
   if (is_ipv6) {
     /**
-     * @brief The Pseudo-Header for an IPv6 + UDP Stack is composed of the
+     * @brief The Pseudo-Header for an IPv6 + UDP stack is composed of the
      * following elements:
      * - IPv6 Source Address
      * - IPv6 Destination Address
-     * - Protocol ID (on 32 bits)
-     * - UDP Length (on 32 bits)
+     * - Protocol ID (32 bits)
+     * - UDP Length (32 bits)
      */
 
-    // 1. Init Pseudo-Header Checksum
+    // 1. Initialize Pseudo-Header Checksum
     pseudo_header_checksum = 0;
 
     // 2. Add IPv6 Addresses Checksum
@@ -51,7 +53,7 @@ void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
         packet[44],   // 44 and 45 are the byte positions which represent the
         packet[45]);  // UDP Length in an IPv6 + UDP protocol stack
 
-    // 4.   UDP Length + Protocol ID :
+    // 4. UDP Length + Protocol ID:
     // 4.1. Allocate udp_length_protocol_id from the pool
     uint8_t* udp_length_protocol_id =
         (uint8_t*) pool_alloc(sizeof(uint8_t) * 8);  // 4 bytes for each
@@ -71,25 +73,23 @@ void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
     pool_dealloc(udp_length_protocol_id, sizeof(uint8_t) * 8);
 
     /**
-     * @brief The second part needed for UDP Checksum is the UDP Packet, i.e.
-     UDP Header and UDP Payload.
+     * @brief The second part needed for the UDP checksum is the UDP packet,
+     * i.e., the UDP header and UDP payload.
      *
-     * @remark The only variable part is the UDP Payload. Indeed, we cannot
-     predict the length of this part. However, we can deduce it from the UDP
-     Length Value.
+     * @remark The only variable part is the UDP payload. Indeed, we cannot
+     * predict the length of this part. However, we can deduce it from the UDP
+     * length value.
      *
-     * @details If the UDP Payload Length is odd, then one 0x00 byte is added in
-     the calculation of the UDP Packet Checksum.
+     * @details If the UDP payload length is odd, then one 0x00 byte is added in
+     * the calculation of the UDP packet checksum.
      */
 
-    // 1. Init UDP Packet Checksum
+    // 1. Initialize UDP Packet Checksum
     udp_packet_checksum = 0;
-    __calculate_checksum(
-        &udp_packet_checksum,
-        packet + 40,            // 40 is the byte position of the beginning of
-        udp_length_value - 2);  // the UDP Header in an IPv6 Stack
+    __calculate_checksum(&udp_packet_checksum, packet + 40,
+                         udp_length_value - 2);
 
-    // 2. Handle last 16-bit of UDP Payload
+    // 2. Handle the last 16-bit of the UDP payload
     if (udp_length_value % 2 == 0) {
       __calculate_checksum(&udp_packet_checksum, packet + (packet_byte_len - 2),
                            2);
@@ -99,7 +99,7 @@ void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
       udp_packet_checksum = (udp_packet_checksum + carry) & 0xffff;
     }
 
-    // Sum both checksum
+    // Sum both checksums
     checksum_value = pseudo_header_checksum + udp_packet_checksum;
 
     // Normalize to uint16_t checksum_value
@@ -109,7 +109,7 @@ void udp_checksum(uint8_t* checksum, const size_t checksum_byte_len,
 
     split_uint16_t(checksum, checksum + 1, (uint16_t) checksum_value);
   } else {  // IPv4 Stack
-    // Not Implemented yet
+    // Not implemented yet
     memset(checksum, 0xff, checksum_byte_len);
   }
 }
