@@ -105,8 +105,7 @@ static void __variable_length_decoding(
  * @brief Update the Compute Values in the Packet.
  *
  * @param packet Pointer to the Packet.
- * @param packet_max_byte_len Maximum byte length of the packet.
- * @param packet_bit_position Pointer to the current bit position of the packet.
+ * @param packet_byte_length Byte length of the packet.
  * @param compute_entries Pointer to the Compute Entries which stores the
  * Compute values whihc have to be update.
  * @param card_compute_entries Number of compute entries to consider.
@@ -115,11 +114,13 @@ static void __variable_length_decoding(
  * @param context_byte_len Byte length of the Context.
  * @return The decompression status code, 1 for success, otherwise 0.
  */
-static int __update_compute_entries(
-    uint8_t *packet, const size_t packet_max_byte_len,
-    const size_t packet_bit_position, compute_entry_t *compute_entries,
-    const int card_compute_entries, const rule_descriptor_t *rule_descriptor,
-    const uint8_t *context, const size_t context_byte_len);
+static int __update_compute_entries(uint8_t         *packet,
+                                    const size_t     packet_byte_length,
+                                    compute_entry_t *compute_entries,
+                                    const int        card_compute_entries,
+                                    const rule_descriptor_t *rule_descriptor,
+                                    const uint8_t           *context,
+                                    const size_t             context_byte_len);
 
 /* ********************************************************************** */
 /*                        Main decompress function                        */
@@ -478,10 +479,8 @@ static int __compression(
                                       rule_field_descriptor->sid);
     }
 
-    // To do : Change this statement in order to add CDA_COMPUTE feature
     // Add decompressed_field into packet
-    if (/*rule_field_descriptor->cda != CDA_COMPUTE &&*/
-        schc_decompression_status) {
+    if (schc_decompression_status) {
       add_bits_to_buffer(packet, packet_max_byte_len, packet_bit_position,
                          decompressed_field, decompressed_field_len);
     }
@@ -520,7 +519,7 @@ static int __compression(
   if (card_compute_entries > 0) {
     // Update Compute entries
     schc_decompression_status = __update_compute_entries(
-        packet, packet_max_byte_len, *packet_bit_position, compute_entries,
+        packet, BYTE_LENGTH(*packet_bit_position), compute_entries,
         card_compute_entries, rule_descriptor, context, context_byte_len);
 
     // Deallocate compute_entries from the pool
@@ -552,11 +551,13 @@ static void __variable_length_decoding(
 
 /* ********************************************************************** */
 
-static int __update_compute_entries(
-    uint8_t *packet, const size_t packet_max_byte_len,
-    const size_t packet_bit_position, compute_entry_t *compute_entries,
-    const int card_compute_entries, const rule_descriptor_t *rule_descriptor,
-    const uint8_t *context, const size_t context_byte_len) {
+static int __update_compute_entries(uint8_t         *packet,
+                                    const size_t     packet_byte_length,
+                                    compute_entry_t *compute_entries,
+                                    const int        card_compute_entries,
+                                    const rule_descriptor_t *rule_descriptor,
+                                    const uint8_t           *context,
+                                    const size_t             context_byte_len) {
   int                      schc_decompression_status;
   int                      index_compute_entry;
   size_t                   current_bit_position;
@@ -594,16 +595,16 @@ static int __update_compute_entries(
       current_bit_position = compute_entries[index_compute_entry].bit_position;
 
       if (rule_field_descriptor->sid == SID_UDP_CHECKSUM) {
-        udp_checksum(compute_value, 2, packet, packet_max_byte_len, 1);
+        udp_checksum(compute_value, 2, packet, packet_byte_length, 1);
       } else {
-        tmp_value        = BYTE_LENGTH(packet_bit_position) - 40;
+        tmp_value        = packet_byte_length - 40;
         compute_value[0] = (uint8_t) ((tmp_value >> 8) & 0xff);
         compute_value[1] = (uint8_t) (tmp_value & 0xff);
       }
 
-      schc_decompression_status =
-          add_bits_to_buffer(packet, packet_max_byte_len, &current_bit_position,
-                             compute_value, 16);
+      // Update the compute content directly into the packet
+      schc_decompression_status = add_bits_to_buffer(
+          packet, packet_byte_length, &current_bit_position, compute_value, 16);
 
       // Deallocate compute_value from the pool
       pool_dealloc(compute_value, sizeof(uint8_t) * 2);
