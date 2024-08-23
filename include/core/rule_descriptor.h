@@ -17,15 +17,16 @@ typedef struct {
 } rule_descriptor_t;
 
 /**
- * @brief Get a Rule Descriptor thanks to an index.
+ * @brief Gets a Rule Descriptor thanks to an index.
  *
  * @param rule_descriptor Pointer to the Rule Descriptor to fill.
  * @param index Index of the Rule Descriptor to get in context.
- * @param context Pointer to the SCHC Context.
+ * @param context Pointer to the CSCHC Context.
  * @param context_byte_len Byte length of context.
  * @return The status code, 1 for success otherwise 0.
  */
-int get_rule_descriptor(rule_descriptor_t *rule_descriptor, const int index,
-                        const uint8_t *context, const size_t context_byte_len);
+int get_rule_descriptor(rule_descriptor_t *rule_descriptor,
+                        const unsigned int index, const uint8_t *context,
+                        const size_t context_byte_len);
 
 #endif  // _RULE_DESCRIPTOR_H_

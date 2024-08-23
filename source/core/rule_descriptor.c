@@ -2,8 +2,9 @@
 
 /* ********************************************************************** */
 
-int get_rule_descriptor(rule_descriptor_t *rule_descriptor, const int index,
-                        const uint8_t *context, const size_t context_byte_len) {
+int get_rule_descriptor(rule_descriptor_t *rule_descriptor,
+                        const unsigned int index, const uint8_t *context,
+                        const size_t context_byte_len) {
   uint16_t rule_descriptor_offset;
 
   // context[1] represents the total number of rule descriptor in the context
