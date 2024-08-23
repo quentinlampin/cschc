@@ -5,15 +5,15 @@
 void unpack_di_mo_cda(direction_indicator_t *di, matching_operator_t *mo,
                       compression_decompression_action_t *cda,
                       const uint8_t                       packed_value) {
-  *di  = (direction_indicator_t) ((packed_value >> 5) & 0b00000011);
-  *mo  = (matching_operator_t) ((packed_value >> 3) & 0b00000011);
-  *cda = (compression_decompression_action_t) (packed_value & 0b00000111);
+  *di  = (direction_indicator_t) ((packed_value >> 5) & 0x03);
+  *mo  = (matching_operator_t) ((packed_value >> 3) & 0x03);
+  *cda = (compression_decompression_action_t) (packed_value & 0x07);
 }
 
 /* ********************************************************************** */
 
 int get_rule_field_descriptor(rule_field_descriptor_t *rule_field_descriptor,
-                              const int                index,
+                              const unsigned int       index,
                               const uint16_t           rule_descriptor_offset,
                               const uint8_t           *context,
                               const size_t             context_byte_len) {
