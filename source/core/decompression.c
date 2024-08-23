@@ -172,6 +172,9 @@ static size_t __decompression_handler(
     return schc_decompression_status;
   }
 
+  // Reset the packet
+  memset(packet, 0x00, packet_max_byte_len);
+
   switch (rule_descriptor->nature) {
     case NATURE_COMPRESSION:
       schc_decompression_status = __compression(
