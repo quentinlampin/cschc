@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(CMAKE_C_FLAGS_DEBUG_INIT "-Wall -g -O0 -fsanitize=address")
+set(CMAKE_C_FLAGS_DEBUG_INIT 
+    "-Wall -Wextra -Wpedantic -Wformat=2 -Wno-unused-parameter -Wshadow \
+     -Wwrite-strings -Wstrict-prototypes -Wold-style-definition         \
+     -Wredundant-decls -Wnested-externs -Wmissing-include-dirs          \
+     -Wjump-misses-init -Wlogical-op -fsanitize=address")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-Wall -g -O0 -fsanitize=address")
 set(CMAKE_C_FLAGS_RELEASE_INIT "-Wall")
 
@@ -54,6 +58,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
     add_executable(test-memory ${PROJECT_SOURCE_DIR}/test/test_memory.c)
     target_link_libraries(test-memory PRIVATE cschc)
     add_test(NAME test-memory COMMAND $<TARGET_FILE:test-memory>)
+
+    # - Headers
+    add_executable(test-headers ${PROJECT_SOURCE_DIR}/test/test_headers.c)
+    target_link_libraries(test-headers PRIVATE cschc)
+    add_test(NAME test-headers COMMAND $<TARGET_FILE:test-headers>)
 
     # - Rule Descriptor
     add_executable(test-rule-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_descriptor.c)
