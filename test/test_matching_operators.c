@@ -151,29 +151,25 @@ void test_MO_most_significant_bits(void) {
       0x13, 0x02, 0, 24, 0, 1, 81, 0, 4, 1, 0, 81,   // 61
 
       // Target Value
-      0b00000110, 0b10110100,              // 73
-      0b00011010,                          // 75
-      0b00000001, 0b00110100, 0b10110101,  // 76
-      0b00000001, 0b00110100,              // 79
-      0b00001001                           // 81
+      0x06, 0xb4,        // 73
+      0x1a,              // 75
+      0x01, 0x34, 0xb5,  // 76
+      0x01, 0x34,        // 79
+      0x09               // 81
   };
   const size_t short_context_byte_len = sizeof(short_context);
 
   rule_field_descriptor_t rule_field_descriptor;
 
-  const uint8_t value_1_rule_field_0_1[] = {0b00011010, 0b11010011};
-  const uint8_t value_2_rule_field_0_1[] = {0b11111010, 0b11010011};
-  const uint8_t value_3_rule_field_0_1[] = {0b00011010, 0b11010010};
-  const uint8_t value_4_rule_field_0_1[] = {0b00011010, 0b01010011};
+  const uint8_t value_1_rule_field_0_1[] = {0x1a, 0xd3};
+  const uint8_t value_2_rule_field_0_1[] = {0xfa, 0xd3};
+  const uint8_t value_3_rule_field_0_1[] = {0x1a, 0xd2};
+  const uint8_t value_4_rule_field_0_1[] = {0x1a, 0x53};
 
-  const uint8_t value_1_rule_field_2_3_4[] = {0b10011010, 0b01011010,
-                                              0b11111111};
-  const uint8_t value_2_rule_field_2_3_4[] = {0b10011010, 0b01010010,
-                                              0b11010011};
-  const uint8_t value_3_rule_field_2_3_4[] = {0b11111010, 0b01011010,
-                                              0b11010011};
-  const uint8_t value_4_rule_field_2_3_4[] = {0b10010110, 0b01011010,
-                                              0b11010011};
+  const uint8_t value_1_rule_field_2_3_4[] = {0x9a, 0x5a, 0xff};
+  const uint8_t value_2_rule_field_2_3_4[] = {0x9a, 0x52, 0xd3};
+  const uint8_t value_3_rule_field_2_3_4[] = {0xfa, 0x5a, 0xd3};
+  const uint8_t value_4_rule_field_2_3_4[] = {0x96, 0x5a, 0xd3};
   /**
    * @brief Rule Field Descriptor 0
    *

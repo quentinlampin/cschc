@@ -21,7 +21,7 @@ void test_unpacking_di_mo_cda(void) {
    * - mo  = 00  (MO_EQUAL)
    * - cda = 000 (CDA_NOT_SENT)
    */
-  packed_value = 0b10000000;
+  packed_value = 0x80;
   unpack_di_mo_cda(&di, &mo, &cda, packed_value);
   assert(di == DI_UP);
   assert(mo == MO_EQUAL);
@@ -35,7 +35,7 @@ void test_unpacking_di_mo_cda(void) {
    * - mo  = 01  (MO_IGNORE)
    * - cda = 100 (CDA_COMPUTE)
    */
-  packed_value = 0b01001100;
+  packed_value = 0x4c;
   unpack_di_mo_cda(&di, &mo, &cda, packed_value);
   assert(di == DI_BI);
   assert(mo == MO_IGNORE);
@@ -49,7 +49,7 @@ void test_unpacking_di_mo_cda(void) {
    * - mo  = 11  (MO_MATCH_MAPPING)
    * - cda = 000 (CDA_NOT_SENT)
    */
-  packed_value = 0b00111000;
+  packed_value = 0x38;
   unpack_di_mo_cda(&di, &mo, &cda, packed_value);
   assert(di == DI_DW);
   assert(mo == MO_MATCH_MAPPING);

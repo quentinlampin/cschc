@@ -9,12 +9,12 @@
 /* ********************************************************************** */
 
 void test_right_shift(void) {
-  uint8_t      buffer[]        = {0b10011010, 0b01010011, 0b10110111};
+  uint8_t      buffer[]        = {0x9a, 0x53, 0xb7};
   const size_t buffer_byte_len = 3;
 
-  const uint8_t shifted_buffer_1[]  = {0b01001101, 0b00101001, 0b11011011};
-  const uint8_t shifted_buffer_8[]  = {0b10011010, 0b01010011};
-  const uint8_t shifted_buffer_20[] = {0b00001001};
+  const uint8_t shifted_buffer_1[]  = {0x4d, 0x29, 0xdb};
+  const uint8_t shifted_buffer_8[]  = {0x9a, 0x53};
+  const uint8_t shifted_buffer_20[] = {0x09};
 
   uint8_t ptr_buffer[buffer_byte_len];
   size_t  shifted_buffer_byte_len;
@@ -46,12 +46,12 @@ void test_right_shift(void) {
 /* ********************************************************************** */
 
 void test_left_shift(void) {
-  uint8_t      buffer[]        = {0b10011010, 0b01010011, 0b10110111};
+  uint8_t      buffer[]        = {0x9a, 0x53, 0xb7};
   const size_t buffer_byte_len = 3;
 
-  const uint8_t shifted_buffer_1[]  = {0b00110100, 0b10100111, 0b01101110};
-  const uint8_t shifted_buffer_8[]  = {0b01010011, 0b10110111};
-  const uint8_t shifted_buffer_20[] = {0b01110000};
+  const uint8_t shifted_buffer_1[]  = {0x34, 0xa7, 0x6e};
+  const uint8_t shifted_buffer_8[]  = {0x53, 0xb7};
+  const uint8_t shifted_buffer_20[] = {0x70};
 
   uint8_t ptr_buffer[buffer_byte_len];
   size_t  shifted_buffer_byte_len;
@@ -85,9 +85,9 @@ void test_left_shift(void) {
 /* ********************************************************************** */
 
 void test_add_byte_to_buffer(void) {
-  const uint8_t expected_buffer1[] = {0b01100000};
-  const uint8_t expected_buffer2[] = {0b01101101, 0b10000000};
-  const uint8_t expected_buffer3[] = {0b01101101, 0b11111111};
+  const uint8_t expected_buffer1[] = {0x60};
+  const uint8_t expected_buffer2[] = {0x6d, 0x80};
+  const uint8_t expected_buffer3[] = {0x6d, 0xff};
 
   size_t       bit_pos         = 0;
   uint8_t      buffer[2]       = {0};
@@ -97,23 +97,23 @@ void test_add_byte_to_buffer(void) {
   assert(!add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0x00, 9));
 
   // Add 0110 to buffer (empty)
-  assert(add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0b0110, 4));
+  assert(add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0x06, 4));
   assert(bit_pos == 4);
   assert(memcmp(expected_buffer1, buffer, 1) == 0);
 
   // Add 11011 to buffer (0110)
-  assert(add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0b11011, 5));
+  assert(add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0x1b, 5));
   assert(bit_pos == 9);
   assert(memcmp(expected_buffer2, buffer, 2) == 0);
 
   // Add 11111111 to buffer (011011011)
   // But the maximum size if buffer will be reached (17 bits instead of 16
   // available)
-  assert(!add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0b11111111, 8));
+  assert(!add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0xff, 8));
   assert(bit_pos == 9);
 
   // Add 1111111 to buffer (011011011)
-  assert(add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0b1111111, 7));
+  assert(add_byte_to_buffer(buffer, buffer_byte_len, &bit_pos, 0x7f, 7));
   assert(bit_pos == 16);
   assert(memcmp(expected_buffer3, buffer, 2) == 0);
 }
@@ -121,19 +121,17 @@ void test_add_byte_to_buffer(void) {
 /* ********************************************************************** */
 
 void test_add_bits_to_buffer(void) {
-  const uint8_t content1[]         = {0b0110};
-  const uint8_t expected_buffer1[] = {0b01100000};
+  const uint8_t content1[]         = {0x06};
+  const uint8_t expected_buffer1[] = {0x60};
 
-  const uint8_t content2[]         = {0b11011};
-  const uint8_t expected_buffer2[] = {0b01101101, 0b10000000};
+  const uint8_t content2[]         = {0x1b};
+  const uint8_t expected_buffer2[] = {0x6d, 0x80};
 
-  const uint8_t content3[]         = {0b1000, 0b10101001, 0b11000011};
-  const uint8_t expected_buffer3[] = {0b01101101, 0b11000101, 0b01001110,
-                                      0b00011000};
+  const uint8_t content3[]         = {0x08, 0xa9, 0xc3};
+  const uint8_t expected_buffer3[] = {0x6d, 0xc5, 0x4e, 0x18};
 
-  const uint8_t content4[]         = {0b11111111};
-  const uint8_t expected_buffer4[] = {0b01101101, 0b11000101, 0b01001110,
-                                      0b00011111, 0b11111000};
+  const uint8_t content4[]         = {0xff};
+  const uint8_t expected_buffer4[] = {0x6d, 0xc5, 0x4e, 0x1f, 0xf8};
 
   size_t       bit_pos         = 0;
   uint8_t      buffer[5]       = {0};
@@ -173,8 +171,7 @@ void test_extract_bits(void) {
   uint8_t extracted_content[5];
   size_t  bit_position = 0;
 
-  const uint8_t buffer1[] = {0b01101101, 0b11000101, 0b01001110, 0b00011111,
-                             0b11111000};
+  const uint8_t buffer1[]        = {0x6d, 0xc5, 0x4e, 0x1f, 0xf8};
   const size_t  buffer1_byte_len = sizeof(buffer1);
 
   /**
@@ -185,7 +182,7 @@ void test_extract_bits(void) {
    * - bit_position = 4
    * - return 1
    */
-  const uint8_t expected_buffer1_1[] = {0b0110};
+  const uint8_t expected_buffer1_1[] = {0x06};
   assert(extract_bits(extracted_content, 5, 4, &bit_position, buffer1,
                       buffer1_byte_len));
   assert(bit_position == 4);
@@ -199,7 +196,7 @@ void test_extract_bits(void) {
    * - bit_position = 4 + 8 = 12
    * - return 1
    */
-  const uint8_t expected_buffer1_2[] = {0b11011100};
+  const uint8_t expected_buffer1_2[] = {0xdc};
   assert(extract_bits(extracted_content, 5, 8, &bit_position, buffer1,
                       buffer1_byte_len));
   assert(bit_position == 12);
@@ -213,7 +210,7 @@ void test_extract_bits(void) {
    * - bit_position = 12 + 2 = 14
    * - return 1
    */
-  const uint8_t expected_buffer1_3[] = {0b01};
+  const uint8_t expected_buffer1_3[] = {0x01};
   assert(extract_bits(extracted_content, 5, 2, &bit_position, buffer1,
                       buffer1_byte_len));
   assert(bit_position == 14);
@@ -227,7 +224,7 @@ void test_extract_bits(void) {
    * - bit_position = 14 + 18 = 32
    * - return 1
    */
-  const uint8_t expected_buffer1_4[] = {0b01, 0b01001110, 0b00011111};
+  const uint8_t expected_buffer1_4[] = {0x01, 0x4e, 0x1f};
   assert(extract_bits(extracted_content, 5, 18, &bit_position, buffer1,
                       buffer1_byte_len));
   assert(bit_position == 32);
@@ -253,7 +250,7 @@ void test_extract_bits(void) {
    * - bit_position = 14 + 18 = 32
    * - return 1
    */
-  const uint8_t expected_buffer1_5[] = {0b11111000};
+  const uint8_t expected_buffer1_5[] = {0xf8};
   assert(extract_bits(extracted_content, 5, 8, &bit_position, buffer1,
                       buffer1_byte_len));
   assert(bit_position == 40);

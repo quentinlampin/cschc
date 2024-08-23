@@ -144,21 +144,21 @@ void test_CDA_least_significant_bits(void) {
       0x13, 0x02, 0, 24, 0, 1, 81, 0, 4, 1, 0, 81,   // 61
 
       // Target Value
-      0b00000110, 0b10110100,              // 73
-      0b00011010,                          // 75
-      0b00000001, 0b00110100, 0b10110101,  // 76
-      0b00000001, 0b00110100,              // 79
-      0b00001001                           // 81
+      0x06, 0xb4,        // 73
+      0x1a,              // 75
+      0x01, 0x34, 0xb5,  // 76
+      0x01, 0x34,        // 79
+      0x09               // 81
   };
   const size_t short_context_byte_len = sizeof(short_context);
 
   uint8_t                 field_residue[3];
   rule_field_descriptor_t rule_field_descriptor;
 
-  const uint8_t value_1[] = {0b00011010, 0b11010011};
-  const uint8_t value_2[] = {0b10011010, 0b01011010, 0b11010011};
-  const uint8_t value_3[] = {0b00011010, 0b00010011};
-  const uint8_t value_4[] = {0b10011010, 0b10000000, 0b11010011};
+  const uint8_t value_1[] = {0x1a, 0xd3};
+  const uint8_t value_2[] = {0x9a, 0x5a, 0xd3};
+  const uint8_t value_3[] = {0x1a, 0x13};
+  const uint8_t value_4[] = {0x9a, 0x80, 0xd3};
 
   /**
    * @brief Rule Field Descriptor 0
@@ -175,7 +175,7 @@ void test_CDA_least_significant_bits(void) {
   get_rule_field_descriptor(&rule_field_descriptor, 0, 0, short_context,
                             short_context_byte_len);
 
-  const uint8_t value_1_expected_rfd0[] = {0b00000011};
+  const uint8_t value_1_expected_rfd0[] = {0x03};
   assert(CDA_least_significant_bits(field_residue, value_1,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
@@ -200,13 +200,13 @@ void test_CDA_least_significant_bits(void) {
   get_rule_field_descriptor(&rule_field_descriptor, 1, 0, short_context,
                             short_context_byte_len);
 
-  const uint8_t value_1_expected_rfd1[] = {0b11010011};
+  const uint8_t value_1_expected_rfd1[] = {0xd3};
   assert(CDA_least_significant_bits(field_residue, value_1,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
   assert(memcmp(field_residue, value_1_expected_rfd1, 1) == 0);
 
-  const uint8_t value_3_expected_rfd1[] = {0b00010011};
+  const uint8_t value_3_expected_rfd1[] = {0x13};
   assert(CDA_least_significant_bits(field_residue, value_3,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
@@ -227,7 +227,7 @@ void test_CDA_least_significant_bits(void) {
   get_rule_field_descriptor(&rule_field_descriptor, 2, 0, short_context,
                             short_context_byte_len);
 
-  const uint8_t value_2_expected_rfd2[] = {0b01010011};
+  const uint8_t value_2_expected_rfd2[] = {0x53};
   assert(CDA_least_significant_bits(field_residue, value_2,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
@@ -252,7 +252,7 @@ void test_CDA_least_significant_bits(void) {
   get_rule_field_descriptor(&rule_field_descriptor, 3, 0, short_context,
                             short_context_byte_len);
 
-  const uint8_t value_2_expected_rfd3[] = {0b01011010, 0b11010011};
+  const uint8_t value_2_expected_rfd3[] = {0x5a, 0xd3};
   assert(CDA_least_significant_bits(field_residue, value_2,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
@@ -276,13 +276,13 @@ void test_CDA_least_significant_bits(void) {
   get_rule_field_descriptor(&rule_field_descriptor, 4, 0, short_context,
                             short_context_byte_len);
 
-  const uint8_t value_2_expected_rfd4[] = {0b00001010, 0b01011010, 0b11010011};
+  const uint8_t value_2_expected_rfd4[] = {0x0a, 0x5a, 0xd3};
   assert(CDA_least_significant_bits(field_residue, value_2,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
   assert(memcmp(field_residue, value_2_expected_rfd4, 3) == 0);
 
-  const uint8_t value_4_expected_rfd4[] = {0b00001010, 0b10000000, 0b11010011};
+  const uint8_t value_4_expected_rfd4[] = {0x0a, 0x80, 0xd3};
   assert(CDA_least_significant_bits(field_residue, value_4,
                                     &rule_field_descriptor, short_context,
                                     short_context_byte_len));
