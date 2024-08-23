@@ -14,7 +14,8 @@
 #define COAP_CODE COAP_PREFIX "-code"
 #define COAP_MESSAGE_ID COAP_PREFIX "-mid"
 #define COAP_TOKEN COAP_PREFIX "-token"
-// Defined by myself
+
+// Defined for this library (Not in current SCHC Yang Model)
 #define COAP_OPTION_DELTA COAP_PREFIX "-option-delta"
 #define COAP_OPTION_LENGTH COAP_PREFIX "-option-length"
 #define COAP_OPTION_VALUE COAP_PREFIX "-option-value"
@@ -31,7 +32,8 @@
 #define SID_COAP_CODE 5023
 #define SID_COAP_MESSAGE_ID 5026
 #define SID_COAP_TOKEN 5053
-// Defined by myself
+
+// Defined for this library (Not in current SCHC Yang Model)
 #define SID_COAP_OPTION_DELTA 5136
 #define SID_COAP_OPTION_DELTA_EXTENDED 5137
 #define SID_COAP_OPTION_LENGTH 5138
@@ -40,15 +42,14 @@
 #define SID_COAP_PAYLOAD_MARKER 5141
 
 /**
- * @brief Set the CoAP Variable Length.
+ * @brief Sets the CoAP Variable-Length.
  *
  * @details See Section 3 of CoAP RFC 7252.
  *
- * @param variable_length Pointer to the Variable Length to fill.
- * @param field Pointer to the CoAP Option value (Option Delta or Option
- * Length).
+ * @param variable_length Pointer to the Variable-Length value to fill.
+ * @param field Pointer to the CoAP Option (Option Delta or Option Length).
  * @param field_byte_len Byte length of the Field.
- * @param sid SID of the CoAP Option.
+ * @param sid SID of the CoAP Option..
  */
 void set_coap_option_variable_length(uint16_t*      variable_length,
                                      const uint8_t* field,
@@ -56,13 +57,13 @@ void set_coap_option_variable_length(uint16_t*      variable_length,
                                      const uint16_t sid);
 
 /**
- * @brief Get the CoAP Option Extended bit length.
+ * @brief Gets the CoAP Option Extended bit length.
  *
  * @details See Section 3.1 of CoAP RFC 7252.
  *
- * @param option The CoAP Option value (Option Delta or Option Length).
+ * @param option The CoAP Option (Option Delta or Option Length).
  * @param sid SID corresponding to the CoAP Option.
- * @return The bit length of the CoAP Option Extended.
+ * @return The bit length of the CoAP Option Extended (Delta or Length).
  */
 size_t get_coap_option_bit_length(const uint16_t option, const uint16_t sid);
 

@@ -14,9 +14,12 @@
 #define IPV6_PAYLOAD_LENGTH IPV6_PREFIX "-payload-length"
 #define IPV6_NEXT_HEADER IPV6_PREFIX "-nextheader"
 #define IPV6_HOP_LIMIT IPV6_PREFIX "-hoplimit"
-#define IPV6_SRC_ADDRESS IPV6_PREFIX "-sourceaddress"
-#define IPV6_DST_ADDRESS IPV6_PREFIX "-destinationaddress"
-// Prefix and IID in Yang model?
+
+// Defined for this library (Not in current SCHC Yang Model)
+#define IPV6_SRC_ADDRESS IPV6_PREFIX "-source-address"
+#define IPV6_DST_ADDRESS IPV6_PREFIX "-destination-address"
+
+// Prefix and IID defined in SCHC Yang model but not used in this implementation
 // #define IPV6_APP_PREFIX IPV6_PREFIX "-appprefix"
 // #define IPV6_APP_IID IPV6_PREFIX "-appiid"
 // #define IPV6_DEV_PREFIX IPV6_PREFIX "-devprefix"
@@ -33,9 +36,12 @@
 #define SID_IPV6_PAYLOAD_LENGTH 5064
 #define SID_IPV6_NEXT_HEADER 5063
 #define SID_IPV6_HOP_LIMIT 5062
+
+// Defined for this library (Not in current SCHC Yang Model)
 #define SID_IPV6_SRC_ADDRESS 5057
 #define SID_IPV6_DST_ADDRESS 5060
-// Prefix and IID in Yang model?
+
+// Prefix and IID defined in SCHC Yang model but not used in this implementation
 // #define SID_IPV6_APP_PREFIX 5057
 // #define SID_IPV6_APP_IID 5056
 // #define SID_IPV6_DEV_PREFIX 5060

@@ -26,7 +26,7 @@
 /**
  * @brief Determines the UDP Checksum Value.
  *
- * @param checksum Pointer to store the computed checksum.
+ * @param checksum Pointer that store the computed checksum.
  * @param checksum_byte_len Byte length of the checksum.
  * @param packet Pointer to the packet data.
  * @param packet_byte_len Byte length of the packet.
