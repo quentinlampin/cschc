@@ -10,9 +10,9 @@ int get_cardinal_compute_entries(const rule_descriptor_t *rule_descriptor,
   int                      index_rule_field_descriptor;
   rule_field_descriptor_t *rule_field_descriptor;
 
+  // Init
   card_compute_entries        = 0;
   index_rule_field_descriptor = 0;
-  rule_field_descriptor       = NULL;
 
   // Allocate rule_field_descriptor from the pool
   rule_field_descriptor =
@@ -25,11 +25,12 @@ int get_cardinal_compute_entries(const rule_descriptor_t *rule_descriptor,
         rule_field_descriptor, index_rule_field_descriptor,
         rule_descriptor->offset, context, context_byte_len);
 
-    // Check if the Rule Field Descriptor CDA is COMPUTE
+    // Check if the Rule Field Descriptor CDA is CDA_COMPUTE
     if (rule_field_descriptor->cda == CDA_COMPUTE) {
       card_compute_entries++;
     }
 
+    // Move to the next Rule Field Descriptor index
     index_rule_field_descriptor++;
   }
 

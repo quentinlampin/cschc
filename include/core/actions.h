@@ -10,10 +10,11 @@
  * @brief (De)Compression Action which elides the Field only if the result of
  * MO_equal is true.
  *
- * @details See MO_equal(...).
+ * @details See MO_equal(...) in matching_operators.h.
  *
- * @param field Pointer to the field value.
- * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param field Pointer to the Field Value.
+ * @param rule_field_descriptor Pointer to the corresponding Rule Field
+ * Descriptor.
  * @param context Pointer to the SCHC Context.
  * @param context_byte_len Byte length of the context.
  * @return The (de)compression action status, 1 for success, otherwise 0.
@@ -23,18 +24,19 @@ int CDA_not_sent(const uint8_t                 *field,
                  const uint8_t *context, const size_t context_byte_len);
 
 /**
- * @brief Fill the Field Residue with the corresponding least significant bits
+ * @brief Fill the Field Residue with the corresponding Least Significant Bits
  * of the Field.
  *
- * @param field_residue Pointer to the field residue to fill.
- * @param field Pointer to the field value.
- * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param field_residue Pointer to the Field Residue to fill.
+ * @param field Pointer to the Field Value.
+ * @param rule_field_descriptor Pointer to the corresponding Rule Field
+ * Descriptor.
  * @param context Pointer to the SCHC Context.
  * @param context_byte_len Byte length of the context.
  * @return The (de)compression action status, 1 for success, otherwise 0.
  *
  * @details A 0 return status means the MSB part doesn't match the one defined
- * in the Rule Field Descriptor.
+ * in the current Rule Field Descriptor.
  */
 int CDA_least_significant_bits(
     uint8_t *field_residue, const uint8_t *field,
@@ -45,9 +47,10 @@ int CDA_least_significant_bits(
  * @brief Fill the Field Residue with the corresponding index of the matching
  * Target Value among the list defined by the current Rule Field Descriptor.
  *
- * @param field_residue Pointer to the field residue to fill.
- * @param field Pointer to the field value.
- * @param rule_field_descriptor Pointer to the Rule Field Descriptor.
+ * @param field_residue Pointer to the Field Residue to fill.
+ * @param field Pointer to the Field Value.
+ * @param rule_field_descriptor Pointer to the corresponding Rule Field
+ * Descriptor.
  * @param context Pointer to the SCHC Context.
  * @param context_byte_len Byte length of the context.
  * @return The (de)compression action status, 1 for success, otherwise 0.
@@ -76,6 +79,6 @@ int CDA_value_sent(void);
  *
  * @return 1 for success.
  */
-int CDA_compute(void);  // not implemented yet
+int CDA_compute(void);
 
 #endif  // _COMPRESSION_DECOMPRESSION_ACTIONS_H_

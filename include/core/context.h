@@ -10,7 +10,8 @@
  *
  * @note A Target Value of a Rule Field Descriptor can appear in different
  * places. Same idea for a Rule Field Descriptor. Therefore, the Context byte
- * array stores the offset of each object represented.
+ * array stores the offset of each object represented in order to optimize it
+ * length.
  *
  * @struct
  * // Context
@@ -49,20 +50,21 @@
  * which uses CDA_COMPUTE along with its position in the Rule Descriptor.
  */
 typedef struct {
-  size_t bit_position;
-  int    index_rule_field_descriptor;
+  size_t bit_position;  // Bit position of the compute entry in a packet
+  int    index_rule_field_descriptor;  // Index of the corresponding Rule Field
+                                       // Descriptor
 } compute_entry_t;
 
 /**
- * @brief Get the number of CDA fields that are equal to CDA_Compute among all
- * Rule Field Descriptors in a Rule Descriptor.
+ * @brief Gets the number of CDA fields that are equal to CDA_COMPUTE among all
+ * Rule Field Descriptors in a specific Rule Descriptor.
  *
  * @details As specified in SCHC RFC 8724, only a few fields can use the Compute
  * action. However, we can still use the Value-Sent action on these fields. This
  * function ensures that we know the correct number of fields to compute before
  * applying the compression, even though this function adds O(n) complexity.
  *
- * @param rule_descriptor Pointer to the rule descriptor used for decompression.
+ * @param rule_descriptor Pointer to the Rule Descriptor used for decompression.
  * @param context Pointer to the SCHC Context used to perform decompression.
  * @param context_byte_len Byte length of the context.
  * @return The number of fields that use the Compute action.

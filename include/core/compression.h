@@ -9,8 +9,8 @@
 /**
  * @brief Compress a Packet using a SCHC Context.
  *
- * @param schc_packet Pointer to the SCHC packet to fill.
- * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param schc_packet Pointer to the SCHC Packet to fill.
+ * @param schc_packet_max_byte_len Maximum byte length of the schc_packet.
  * @param packet_direction Packet Direction Indicator.
  * @param packet Pointer to the packet that needs to be compressed.
  * @param packet_byte_len Byte length of the packet to compress.

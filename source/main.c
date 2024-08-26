@@ -39,7 +39,7 @@ void compression_usage(const uint8_t *context, const size_t context_byte_len) {
   uint8_t *cschc_packet = (uint8_t *) pool_alloc(packet_size + 1);
 
   /**
-   * @brief Perform CSCHC Compression.
+   * @brief Perform SCHC Compression.
    *
    * @details The Direction Indicator is set to UP. Indeed :
    * - IPv6 Source Address corresponds to 2001:0db8:000a::0003
@@ -54,11 +54,11 @@ void compression_usage(const uint8_t *context, const size_t context_byte_len) {
       compress(cschc_packet, packet_size + 1, DI_UP, packet, packet_size,
                context, context_byte_len);
   printf("DI_UP compression :\n");
-  printf("  CSCHC Pkt is : ");
+  printf("  SCHC Pkt is : ");
   print_hex_packet(cschc_packet, cschc_packet_size, 0);
 
   /**
-   * @brief Perform CSCHC Compression
+   * @brief Perform SCHC Compression
    *
    * @details Now, if we try to compress the last packet with DOWN Direction
    * Indicator, the no-compression rule will be reached.
@@ -66,7 +66,7 @@ void compression_usage(const uint8_t *context, const size_t context_byte_len) {
   cschc_packet_size = compress(cschc_packet, packet_size + 1, DI_DW, packet,
                                packet_size, context, context_byte_len);
   printf("DI_DW compression :\n");
-  printf("  CSCHC Pkt is : ");
+  printf("  SCHC Pkt is : ");
   print_hex_packet(cschc_packet, cschc_packet_size, 0);
 
   printf("===========================================\n\n");
@@ -89,7 +89,7 @@ void decompression_usage(const uint8_t *context,
   const size_t cschc_packet_size = sizeof(cschc_packet);
 
   printf("========== DECOMPRESSION EXAMPLE ==========\n");
-  printf("  CSCHC Pkt is : ");
+  printf("  SCHC Pkt is : ");
   print_hex_packet(cschc_packet, cschc_packet_size, 0);
 
   /**
@@ -98,7 +98,7 @@ void decompression_usage(const uint8_t *context,
   uint8_t *packet = (uint8_t *) pool_alloc(100);
 
   /**
-   * @brief Perform CSCHC Decompression.
+   * @brief Perform SCHC Decompression.
    *
    * @details 5 Rule Descriptors are defined in the Context, meaning that 3 bits
    * are necessary to encode the Rule ID. So the first 3 bits of the compressed
@@ -131,7 +131,7 @@ int main(void) {
   init_memory_pool();
 
   /**
-   * @brief Create a CSCHC Context.
+   * @brief Create a SCHC Context.
    *
    * @details 5 Rule Descriptors and 47 Rule Field Descriptors.
    * Rule Descriptor 0 : Maximal compression expected for a packet here.
@@ -301,10 +301,10 @@ int main(void) {
 
   const size_t context_byte_len = sizeof(context);
 
-  // CSCHC Compression Usage
+  // SCHC Compression Usage
   compression_usage(context, context_byte_len);
 
-  // CSCHC Decompression Usage
+  // SCHC Decompression Usage
   decompression_usage(context, context_byte_len);
 
   // At the end of the program, you need to destroy the pool as a single malloc

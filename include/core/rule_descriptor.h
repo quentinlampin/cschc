@@ -10,10 +10,10 @@
  * @brief Struct that defines a Rule Descriptor.
  */
 typedef struct {
-  uint16_t offset;
-  uint8_t  id;
-  nature_t nature;
-  uint8_t  card_rule_field_descriptor;
+  uint16_t offset;  // Offset of the Rule Descriptor in a SCHC Context
+  uint8_t  id;      // ID
+  nature_t nature;  // Compression Nature
+  uint8_t  card_rule_field_descriptor;  // Number of Rule Field Descriptor
 } rule_descriptor_t;
 
 /**
@@ -21,7 +21,7 @@ typedef struct {
  *
  * @param rule_descriptor Pointer to the Rule Descriptor to fill.
  * @param index Index of the Rule Descriptor to get in context.
- * @param context Pointer to the CSCHC Context.
+ * @param context Pointer to the SCHC Context.
  * @param context_byte_len Byte length of context.
  * @return The status code, 1 for success otherwise 0.
  */

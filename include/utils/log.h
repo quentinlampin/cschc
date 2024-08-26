@@ -20,12 +20,12 @@
 void print_binary(const uint8_t *buffer, const size_t buffer_byte_len);
 
 /**
- * @brief Displays a uint8_t array as a hexadecimal array.
+ * @brief Displays a uint8_t array as hexadecimal array.
  *
  * @param buffer Pointer to the buffer.
  * @param buffer_byte_len Byte length of the buffer.
- * @param with_space Indicates the display format. 1 for adding space between
- * elements, 0 otherwise.
+ * @param with_space Indicates the display format. 1 for adding space and comma
+ * between elements, 0 otherwise.
  */
 void print_hex_packet(const uint8_t *buffer, const size_t buffer_byte_len,
                       int with_space);

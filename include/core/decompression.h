@@ -9,11 +9,11 @@
 /**
  * @brief Decompress a SCHC Packet using a SCHC Context.
  *
- * @param packet Pointer to the packet to fill.
+ * @param packet Pointer to the Packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
  * @param packet_direction Packet Direction Indicator.
- * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
- * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
+ * @param schc_packet Pointer to the SCHC Packet that needs to be decompressed.
+ * @param schc_packet_byte_len Byte length of the schc_packet to decompress.
  * @param context Pointer to the SCHC Context used to perform decompression.
  * @param context_byte_len Byte length of the context.
  * @return The final byte length of the decompressed SCHC packet.

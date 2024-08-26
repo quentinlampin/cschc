@@ -49,7 +49,7 @@
  * @param variable_length Pointer to the Variable-Length value to fill.
  * @param field Pointer to the CoAP Option (Option Delta or Option Length).
  * @param field_byte_len Byte length of the Field.
- * @param sid SID of the CoAP Option..
+ * @param sid SID of the CoAP Option.
  */
 void set_coap_option_variable_length(uint16_t*      variable_length,
                                      const uint8_t* field,
