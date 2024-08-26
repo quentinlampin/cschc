@@ -89,7 +89,7 @@ void decompression_usage(const uint8_t *context,
   const size_t cschc_packet_size = sizeof(cschc_packet);
 
   printf("========== DECOMPRESSION EXAMPLE ==========\n");
-  printf("  SCHC Pkt is : ");
+  printf("   SCHC Pkt is : ");
   print_hex_packet(cschc_packet, cschc_packet_size, 0);
 
   /**
