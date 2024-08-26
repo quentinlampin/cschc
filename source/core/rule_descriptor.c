@@ -1,4 +1,5 @@
 #include "rule_descriptor.h"
+#include "utils/binary.h"
 
 /* ********************************************************************** */
 
@@ -7,13 +8,13 @@ int get_rule_descriptor(rule_descriptor_t *rule_descriptor,
                         const size_t context_byte_len) {
   uint16_t rule_descriptor_offset;
 
-  // context[1] represents the total number of rule descriptor in the context
+  // context[1] represents the total number of Rule Descriptor in the Context
   if (index >= context[1] || 2 + 2 * index + 1 >= context_byte_len) {
     return 0;
   }
 
   rule_descriptor_offset =
-      ((uint16_t) context[2 + 2 * index] << 8) | context[2 + 2 * index + 1];
+      merge_uint8_t(context[2 + 2 * index], context[2 + 2 * index + 1]);
 
   rule_descriptor->offset = rule_descriptor_offset;
   rule_descriptor->id     = context[rule_descriptor_offset++];

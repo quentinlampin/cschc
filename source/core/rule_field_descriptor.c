@@ -1,4 +1,5 @@
 #include "rule_field_descriptor.h"
+#include "utils/binary.h"
 
 /* ********************************************************************** */
 
@@ -27,22 +28,22 @@ int get_rule_field_descriptor(rule_field_descriptor_t *rule_field_descriptor,
   }
 
   rule_field_descriptor_offset =
-      ((uint16_t) context[rule_descriptor_offset + 3 + 2 * index] << 8) |
-      context[rule_descriptor_offset + 3 + 2 * index + 1];
+      merge_uint8_t(context[rule_descriptor_offset + 3 + 2 * index],
+                    context[rule_descriptor_offset + 3 + 2 * index + 1]);
 
   rule_field_descriptor->sid =
-      ((uint16_t) context[rule_field_descriptor_offset] << 8) |
-      context[rule_field_descriptor_offset + 1];
+      merge_uint8_t(context[rule_field_descriptor_offset],
+                    context[rule_field_descriptor_offset + 1]);
   rule_field_descriptor_offset += 2;
 
   rule_field_descriptor->len =
-      ((uint16_t) context[rule_field_descriptor_offset] << 8) |
-      context[rule_field_descriptor_offset + 1];
+      merge_uint8_t(context[rule_field_descriptor_offset],
+                    context[rule_field_descriptor_offset + 1]);
   rule_field_descriptor_offset += 2;
 
   rule_field_descriptor->pos =
-      ((uint16_t) context[rule_field_descriptor_offset] << 8) |
-      context[rule_field_descriptor_offset + 1];
+      merge_uint8_t(context[rule_field_descriptor_offset],
+                    context[rule_field_descriptor_offset + 1]);
   rule_field_descriptor_offset += 2;
 
   unpack_di_mo_cda(&rule_field_descriptor->di, &rule_field_descriptor->mo,
@@ -51,8 +52,8 @@ int get_rule_field_descriptor(rule_field_descriptor_t *rule_field_descriptor,
 
   if (rule_field_descriptor->mo == MO_MSB) {
     rule_field_descriptor->msb_len =
-        ((uint16_t) context[rule_field_descriptor_offset] << 8) |
-        context[rule_field_descriptor_offset + 1];
+        merge_uint8_t(context[rule_field_descriptor_offset],
+                      context[rule_field_descriptor_offset + 1]);
     rule_field_descriptor_offset += 2;
   } else {
     rule_field_descriptor->msb_len = 0;
@@ -63,14 +64,12 @@ int get_rule_field_descriptor(rule_field_descriptor_t *rule_field_descriptor,
 
   if (rule_field_descriptor->card_target_value == 1) {
     rule_field_descriptor->first_target_value_offset =
-        ((uint16_t) context[rule_field_descriptor_offset] << 8) |
-        context[rule_field_descriptor_offset + 1];
+        merge_uint8_t(context[rule_field_descriptor_offset],
+                      context[rule_field_descriptor_offset + 1]);
   } else if (rule_field_descriptor->card_target_value > 1) {
     rule_field_descriptor->first_target_value_offset =
         rule_field_descriptor_offset;
-  }
-
-  else {
+  } else {
     rule_field_descriptor->first_target_value_offset = 0;
   }
 

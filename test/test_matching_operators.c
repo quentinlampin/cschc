@@ -1,4 +1,5 @@
 #include "core/matching_operators.h"
+#include "utils/memory.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -411,7 +412,11 @@ void test_MO_match_mapping(void) {
 int main(void) {
   test_MO_equal();
   test_MO_ignore();
-  test_MO_most_significant_bits();
+
+  init_memory_pool();
+  test_MO_most_significant_bits();  // Needs the pool to be allocated
+  destroy_memory_pool();
+
   test_MO_match_mapping();
 
   printf("All tests passed!\n");

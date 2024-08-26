@@ -24,8 +24,8 @@ int CDA_least_significant_bits(
   uint8_t mask;
 
   // If the MSB of field corresponds to the rule_field_descriptor then we
-  // perform LSB. Else we return 0 as an error, meaning the rule do not
-  // correspond to the current field.
+  // perform LSB. Else we return 0 as an error, meaning the Rule Field
+  // Descriptor do not correspond to the current Field Value.
   if (!MO_most_significant_bits(field, rule_field_descriptor, context,
                                 context_byte_len)) {
     return 0;
@@ -35,9 +35,12 @@ int CDA_least_significant_bits(
   field_byte_len = BYTE_LENGTH(rule_field_descriptor->len);
   residue_byte_len = BYTE_LENGTH(lsb_len);
 
+  // Copy the LSB content into field_residue
   memcpy(field_residue, field + (field_byte_len - residue_byte_len),
          residue_byte_len);
 
+  // Mask unnecessary parts of the content that are present due to the previous
+  // copy
   if (lsb_len % 8 != 0) {
     mask = (1 << (lsb_len % 8)) - 1;
     field_residue[0] &= mask;
@@ -53,6 +56,8 @@ int CDA_mapping_sent(uint8_t *field_residue, const uint8_t *field,
                      const uint8_t *context, const size_t context_byte_len) {
   uint16_t target_value_offset;
 
+  // If the mapping refers to only one Target Value, then the corresponding
+  // index is 0
   if (rule_field_descriptor->card_target_value == 1) {
     if (MO_equal(field, rule_field_descriptor, context, context_byte_len)) {
       *field_residue = 0;
@@ -62,11 +67,9 @@ int CDA_mapping_sent(uint8_t *field_residue, const uint8_t *field,
   }
 
   for (uint8_t i = 0; i < rule_field_descriptor->card_target_value; i++) {
-    target_value_offset =
-        ((uint16_t)
-             context[rule_field_descriptor->first_target_value_offset + 2 * i])
-            << 8 |
-        context[rule_field_descriptor->first_target_value_offset + 2 * i + 1];
+    target_value_offset = merge_uint8_t(
+        context[rule_field_descriptor->first_target_value_offset + 2 * i],
+        context[rule_field_descriptor->first_target_value_offset + 2 * i + 1]);
 
     if (__MO_equal_from_offset(field, rule_field_descriptor,
                                target_value_offset, context,

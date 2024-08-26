@@ -132,7 +132,7 @@ void set_coap_option_variable_length(uint16_t*      variable_length,
         break;
 
       case 14:
-        *variable_length = ((uint16_t) ((field[0] << 8) | field[1])) + 269;
+        *variable_length = merge_uint8_t(field[0], field[1]) + 269;
         break;
 
       default:  // less than 13 or 15. 15 is reserved.

@@ -1,4 +1,5 @@
 #include "core/actions.h"
+#include "utils/memory.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -428,7 +429,11 @@ void test_CDA_compute(void) {
 
 int main(void) {
   test_CDA_not_sent();
-  test_CDA_least_significant_bits();
+
+  init_memory_pool();
+  test_CDA_least_significant_bits();  // Needs the pool to be allocated
+  destroy_memory_pool();
+
   test_CDA_mapping_sent();
   test_CDA_value_sent();
   test_CDA_compute();
