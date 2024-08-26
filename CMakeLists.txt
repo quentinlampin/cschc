@@ -11,7 +11,7 @@ set(CMAKE_C_FLAGS_RELEASE_INIT "-Wall")
 
 # library declaration
 project(cschc 
-    VERSION 0.1.0 
+    VERSION 1.0.0 
     DESCRIPTION "C implementation of Static Context Header Compression (SCHC), RFC 8724"
     LANGUAGES C
 )
