@@ -11,16 +11,16 @@
 /* ********************************************************************** */
 
 /**
- * @brief Handle decompression according to the Compression Nature.
+ * @brief Handles decompression according to the Compression Nature.
  *
- * @param packet Pointer to the packet to fill.
+ * @param packet Pointer to the Packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
  * @param packet_direction Packet Direction Indicator.
- * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
- * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
+ * @param schc_packet Pointer to the SCHC Packet that needs to be decompressed.
+ * @param schc_packet_byte_len Byte length of the schc_packet to decompress.
  * @param context Pointer to the SCHC Context used to perform decompression.
  * @param context_byte_len Byte length of the context.
- * @return The final byte length of the decompressed SCHC packet.
+ * @return The final byte length of the decompressed SCHC Packet.
  */
 static size_t __decompression_handler(
     uint8_t *packet, const size_t packet_max_byte_len,
@@ -29,13 +29,13 @@ static size_t __decompression_handler(
     const size_t context_byte_len);
 
 /**
- * @brief Get the SCHC Rule Descriptor used to perform compression and therefore
- * the one which will be use to decompress the packet.
+ * @brief Gets the Rule Descriptor used to perform compression and therefore
+ * the one which will be use to decompress the Packet.
  *
  * @param rule_descriptor Pointer to the Rule Descriptor to fill.
  * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
- * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
- * @param bit_position Pointer to the current bit position of SCHC packet.
+ * @param schc_packet_byte_len Byte length of the schc_packet to decompress.
+ * @param bit_position Pointer to the current bit position of schc_packet.
  * @param context Pointer to the SCHC Context used to perform decompression.
  * @param context_byte_len Byte length of the context.
  * @return The decompression status code, 1 for success, otherwise 0.
@@ -48,13 +48,13 @@ static int __get_schc_rule_descriptor(rule_descriptor_t *rule_descriptor,
                                       const size_t       context_byte_len);
 
 /**
- * @brief Handle packets compressed with a no-compression Rule Descriptor.
+ * @brief Handles Packets compressed with SCHC No-compression Nature.
  *
- * @param packet Pointer to the packet to fill.
+ * @param packet Pointer to the Packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
  * @param bit_position Pointer to the current bit position of the packet.
- * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
- * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
+ * @param schc_packet Pointer to the SCHC Packet that needs to be decompressed.
+ * @param schc_packet_byte_len Byte length of the schc_packet to decompress.
  * @return The decompression status code, 1 for success, otherwise 0.
  */
 static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
@@ -63,16 +63,16 @@ static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
                             const size_t   schc_packet_byte_len);
 
 /**
- * @brief Perform SCHC decompression on the given SCHC packet using a specified
+ * @brief Performs SCHC decompression on the given SCHC Packet using a specified
  * Rule Descriptor.
  *
- * @param packet Pointer to the packet to fill.
+ * @param packet Pointer to the Packet to fill.
  * @param packet_max_byte_len Maximum byte length of the packet.
  * @param packet_bit_position Pointer to the current bit position of the packet.
- * @param schc_packet_bit_position Bit position of the SCHC packet.
+ * @param schc_packet_bit_position Bit position of the schc_packet.
  * @param packet_direction Packet Direction Indicator.
- * @param schc_packet Pointer to the SCHC packet that needs to be decompressed.
- * @param schc_packet_byte_len Byte length of the SCHC packet to decompress.
+ * @param schc_packet Pointer to the SCHC Packet that needs to be decompressed.
+ * @param schc_packet_byte_len Byte length of the schc_packet to decompress.
  * @param rule_descriptor Pointer to the Rule Descriptor used to decompress.
  * @param context Pointer to the SCHC Context used to perform decompression.
  * @param context_byte_len Byte length of the context.
@@ -88,10 +88,11 @@ static int __compression(uint8_t *packet, const size_t packet_max_byte_len,
                          const uint8_t *context, const size_t context_byte_len);
 
 /**
- * @brief Move SCHC bit position according to the Variable-Length encoded value.
+ * @brief Moves SCHC bit position according to the Variable-Length encoded
+ * value.
  *
  * @param schc_packet_bit_position Pointer to the current bit position of the
- * SCHC packet.
+ * SCHC Packet.
  * @param rule_field_descriptor Pointer to the Rule Field Descriptor of the
  * current field.
  * @param decompressed_field_len Bit length of the decompressed field.
@@ -102,16 +103,16 @@ static void __variable_length_decoding(
     const size_t                   decompressed_field_len);
 
 /**
- * @brief Update the Compute Values in the Packet.
+ * @brief Updates the Compute Values in the Packet.
  *
- * @param packet Pointer to the Packet.
+ * @param packet Pointer to the Packet to update.
  * @param packet_byte_length Byte length of the packet.
  * @param compute_entries Pointer to the Compute Entries which stores the
- * Compute values whihc have to be update.
+ * Compute Values that need to be update.
  * @param card_compute_entries Number of compute entries to consider.
  * @param rule_descriptor Pointer to the current Rule Descriptor.
- * @param context Pointer to the SCHC Contxt.
- * @param context_byte_len Byte length of the Context.
+ * @param context Pointer to the SCHC Context used to perform decompression.
+ * @param context_byte_len Byte length of the context.
  * @return The decompression status code, 1 for success, otherwise 0.
  */
 static int __update_compute_entries(uint8_t         *packet,
@@ -175,6 +176,7 @@ static size_t __decompression_handler(
   // Reset the packet
   memset(packet, 0x00, packet_max_byte_len);
 
+  // Packet filling
   switch (rule_descriptor->nature) {
     case NATURE_COMPRESSION:
       schc_decompression_status = __compression(
@@ -189,7 +191,7 @@ static size_t __decompression_handler(
       break;
 
     case NATURE_FRAGMENTATION:
-      // not implemented
+      // Not implemented yet
       schc_decompression_status = 0;
       break;
 
@@ -224,7 +226,7 @@ static int __get_schc_rule_descriptor(rule_descriptor_t *rule_descriptor,
   size_t  rule_len;
 
   card_rule_descriptor = context[1];  // Number of Rule Descriptor
-                                      // position is 1 in the context
+                                      // Offset is 1 in the Context
   rule_len            = bits_counter(card_rule_descriptor - 1);
   schc_packet_rule_id = *schc_packet >> (8 - rule_len);
 
@@ -249,6 +251,7 @@ static int __no_compression(uint8_t *packet, const size_t packet_max_byte_len,
                             const size_t   bit_position,
                             const uint8_t *schc_packet,
                             const size_t   schc_packet_byte_len) {
+  // Overwrite the SCHC Rule ID by doing a left shift
   memcpy(packet, schc_packet, schc_packet_byte_len);
   left_shift(packet, schc_packet_byte_len, bit_position);
 
@@ -289,22 +292,15 @@ static int __compression(
   index_compute_entry         = 0;
   card_compute_entries =
       get_cardinal_compute_entries(rule_descriptor, context, context_byte_len);
-  payload_byte_position            = 0;
-  decompressed_field_len           = 0;
-  schc_len_to_decompress           = 0;
-  msb_bit_position                 = 0;
-  extracted_field_residue_byte_len = 0;
-  decompressed_field_byte_len      = 0;
-  payload_byte_len                 = 0;
-  coap_tkl                         = 0x00;
-  coap_option_delta                = 0x0000;
-  coap_option_length               = 0x0000;
-  target_value_offset              = 0x0000;
-  extracted_field_residue          = NULL;
-  decompressed_field               = NULL;
-  payload                          = NULL;
-  rule_field_descriptor            = NULL;
-  compute_entries                  = NULL;
+  msb_bit_position        = 0;
+  coap_tkl                = 0x00;
+  coap_option_delta       = 0x0000;
+  coap_option_length      = 0x0000;
+  extracted_field_residue = NULL;
+  decompressed_field      = NULL;
+  payload                 = NULL;
+  rule_field_descriptor   = NULL;
+  compute_entries         = NULL;
 
   // Allocate compute_entries from the pool
   if (card_compute_entries > 0) {
@@ -323,6 +319,10 @@ static int __compression(
     schc_decompression_status = get_rule_field_descriptor(
         rule_field_descriptor, index_rule_field_descriptor,
         rule_descriptor->offset, context, context_byte_len);
+
+    if (!schc_decompression_status) {
+      break;
+    }
 
     // Check if the Rule Field Descriptor DI corresponds to the packet DI
     if (rule_field_descriptor->di != DI_BI &&
@@ -355,17 +355,13 @@ static int __compression(
     decompressed_field =
         (uint8_t *) pool_alloc(sizeof(uint8_t) * decompressed_field_byte_len);
 
-    if (!schc_decompression_status) {
-      return schc_decompression_status;
-    }
-
     // Variable-Length Decoding
     __variable_length_decoding(&schc_packet_bit_position, rule_field_descriptor,
                                decompressed_field_len);
 
     switch (rule_field_descriptor->cda) {
       case CDA_LSB:
-        // Add MSB part from the context to the decompressed field
+        // Add MSB part from the Context to the decompressed_field
         memcpy(decompressed_field,
                context + rule_field_descriptor->first_target_value_offset,
                BYTE_LENGTH(rule_field_descriptor->msb_len));
@@ -380,9 +376,14 @@ static int __compression(
             sizeof(uint8_t) * extracted_field_residue_byte_len);
 
         // Extract LSB part from the packet in extracted_field_residue
-        extract_bits(extracted_field_residue, extracted_field_residue_byte_len,
-                     schc_len_to_decompress, &schc_packet_bit_position,
-                     schc_packet, schc_packet_byte_len);
+        schc_decompression_status = extract_bits(
+            extracted_field_residue, extracted_field_residue_byte_len,
+            schc_len_to_decompress, &schc_packet_bit_position, schc_packet,
+            schc_packet_byte_len);
+
+        if (!schc_decompression_status) {
+          break;
+        }
 
         // Shift on left the current MSB part into decompressed_field
         if (schc_len_to_decompress % 8 != 0) {
@@ -391,10 +392,10 @@ static int __compression(
         }
 
         // Add LSB part to decompressed_field
-        msb_bit_position = rule_field_descriptor->msb_len;
-        add_bits_to_buffer(decompressed_field, decompressed_field_byte_len,
-                           &msb_bit_position, extracted_field_residue,
-                           schc_len_to_decompress);
+        msb_bit_position          = rule_field_descriptor->msb_len;
+        schc_decompression_status = add_bits_to_buffer(
+            decompressed_field, decompressed_field_byte_len, &msb_bit_position,
+            extracted_field_residue, schc_len_to_decompress);
 
         // Deallocate extracted_field_residue from the pool
         pool_dealloc(extracted_field_residue,
@@ -413,22 +414,25 @@ static int __compression(
             sizeof(uint8_t) * extracted_field_residue_byte_len);
 
         // Extract mapping index from the packet in extracted_field_residue
-        extract_bits(extracted_field_residue, extracted_field_residue_byte_len,
-                     schc_len_to_decompress, &schc_packet_bit_position,
-                     schc_packet, schc_packet_byte_len);
+        schc_decompression_status = extract_bits(
+            extracted_field_residue, extracted_field_residue_byte_len,
+            schc_len_to_decompress, &schc_packet_bit_position, schc_packet,
+            schc_packet_byte_len);
+
+        if (!schc_decompression_status) {
+          break;
+        }
 
         // Copy corresponding Target Value in decompressed_field
         if (rule_field_descriptor->card_target_value == 1) {
           target_value_offset =
               rule_field_descriptor->first_target_value_offset;
         } else {
-          target_value_offset =
-              ((uint16_t)
-                   context[rule_field_descriptor->first_target_value_offset +
-                           2 * (*extracted_field_residue)])
-                  << 8 |
+          target_value_offset = merge_uint8_t(
               context[rule_field_descriptor->first_target_value_offset +
-                      2 * (*extracted_field_residue) + 1];
+                      2 * (*extracted_field_residue)],
+              context[rule_field_descriptor->first_target_value_offset +
+                      2 * (*extracted_field_residue) + 1]);
         }
         memcpy(decompressed_field, context + target_value_offset,
                decompressed_field_byte_len);
@@ -440,7 +444,7 @@ static int __compression(
         break;
 
       case CDA_NOT_SENT:
-        // Copy Target Value from context to decompressed_field
+        // Copy Target Value from Context to decompressed_field
         memcpy(decompressed_field,
                context + rule_field_descriptor->first_target_value_offset,
                decompressed_field_byte_len);
@@ -459,14 +463,19 @@ static int __compression(
 
       default:  // CDA_VALUE_SENT
         // Extract directly from the schc_packet the field value
-        extract_bits(decompressed_field, decompressed_field_byte_len,
-                     decompressed_field_len, &schc_packet_bit_position,
-                     schc_packet, schc_packet_byte_len);
+        schc_decompression_status =
+            extract_bits(decompressed_field, decompressed_field_byte_len,
+                         decompressed_field_len, &schc_packet_bit_position,
+                         schc_packet, schc_packet_byte_len);
 
         break;
     }
 
-    // Set the current coap variable length value
+    if (!schc_decompression_status) {
+      break;
+    }
+
+    // Set the current CoAP Variable-Length value
     if (rule_field_descriptor->sid == SID_COAP_TKL) {
       coap_tkl = decompressed_field[0];
     } else if (rule_field_descriptor->sid == SID_COAP_OPTION_DELTA ||
@@ -483,10 +492,9 @@ static int __compression(
     }
 
     // Add decompressed_field into packet
-    if (schc_decompression_status) {
-      add_bits_to_buffer(packet, packet_max_byte_len, packet_bit_position,
-                         decompressed_field, decompressed_field_len);
-    }
+    schc_decompression_status =
+        add_bits_to_buffer(packet, packet_max_byte_len, packet_bit_position,
+                           decompressed_field, decompressed_field_len);
 
     // Deallocate decompressed_field from the pool
     pool_dealloc(decompressed_field,
@@ -499,35 +507,41 @@ static int __compression(
   // Deallocate rule_field_descriptor from the pool
   pool_dealloc(rule_field_descriptor, sizeof(rule_field_descriptor_t));
 
-  // Allocate payload
-  payload_byte_position = schc_packet_bit_position / 8;
-  payload_byte_len      = schc_packet_byte_len - payload_byte_position;
-  payload = (uint8_t *) pool_alloc(sizeof(uint8_t) * (payload_byte_len));
+  if (schc_decompression_status) {
+    // Allocate payload
+    payload_byte_position = schc_packet_bit_position / 8;
+    payload_byte_len      = schc_packet_byte_len - payload_byte_position;
+    payload = (uint8_t *) pool_alloc(sizeof(uint8_t) * (payload_byte_len));
 
-  // Copy payload content and remove unnecessary part
-  memcpy(payload, schc_packet + payload_byte_position, payload_byte_len);
-  if (schc_packet_bit_position % 8 != 0) {
-    right_shift(payload, payload_byte_len, 8 - (schc_packet_bit_position % 8));
-    memmove(payload, payload + 1, payload_byte_len--);
-  }
+    // Copy payload content and remove unnecessary part
+    memcpy(payload, schc_packet + payload_byte_position, payload_byte_len);
+    if (schc_packet_bit_position % 8 != 0) {
+      right_shift(payload, payload_byte_len,
+                  8 - (schc_packet_bit_position % 8));
+      memmove(payload, payload + 1, payload_byte_len--);
+    }
 
-  // Add payload at the end of the packet
-  add_bits_to_buffer(packet, packet_max_byte_len, packet_bit_position, payload,
-                     8 * (payload_byte_len));
+    // Add payload at the end of the packet
+    schc_decompression_status =
+        add_bits_to_buffer(packet, packet_max_byte_len, packet_bit_position,
+                           payload, 8 * (payload_byte_len));
 
-  // Deallocate payload from the pool
-  pool_dealloc(payload, sizeof(uint8_t) * payload_byte_len);
+    // Deallocate payload from the pool
+    pool_dealloc(payload, sizeof(uint8_t) * payload_byte_len);
 
-  // Handle Compute Entries
-  if (card_compute_entries > 0) {
-    // Update Compute entries
-    schc_decompression_status = __update_compute_entries(
-        packet, BYTE_LENGTH(*packet_bit_position), compute_entries,
-        card_compute_entries, rule_descriptor, context, context_byte_len);
+    // Handle Compute Entries
+    if (card_compute_entries > 0) {
+      // Update Compute entries
+      if (schc_decompression_status) {
+        schc_decompression_status = __update_compute_entries(
+            packet, BYTE_LENGTH(*packet_bit_position), compute_entries,
+            card_compute_entries, rule_descriptor, context, context_byte_len);
+      }
 
-    // Deallocate compute_entries from the pool
-    pool_dealloc(compute_entries,
-                 sizeof(compute_entry_t) * card_compute_entries);
+      // Deallocate compute_entries from the pool
+      pool_dealloc(compute_entries,
+                   sizeof(compute_entry_t) * card_compute_entries);
+    }
   }
 
   return schc_decompression_status;
@@ -570,8 +584,6 @@ static int __update_compute_entries(uint8_t         *packet,
 
   schc_decompression_status = 1;
   index_compute_entry       = 0;
-  current_bit_position      = 0;
-  tmp_value                 = 0;
   rule_field_descriptor     = NULL;
   compute_value             = NULL;
 
@@ -587,15 +599,14 @@ static int __update_compute_entries(uint8_t         *packet,
         compute_entries[index_compute_entry].index_rule_field_descriptor,
         rule_descriptor->offset, context, context_byte_len);
 
-    if (rule_field_descriptor->sid == SID_IPV6_PAYLOAD_LENGTH ||
-        rule_field_descriptor->sid == SID_UDP_LENGTH ||
-        rule_field_descriptor->sid == SID_UDP_CHECKSUM) {
+    if ((rule_field_descriptor->sid == SID_IPV6_PAYLOAD_LENGTH ||
+         rule_field_descriptor->sid == SID_UDP_LENGTH ||
+         rule_field_descriptor->sid == SID_UDP_CHECKSUM) &&
+        schc_decompression_status) {
       // Allocate compute_value from the pool
       compute_value = (uint8_t *) pool_alloc(
           sizeof(uint8_t) * 2);  // IPv6 Payload Length, UDP Length and UDP
                                  // Checksum needs only 2 bytes.
-
-      current_bit_position = compute_entries[index_compute_entry].bit_position;
 
       if (rule_field_descriptor->sid == SID_UDP_CHECKSUM) {
         udp_checksum(compute_value, 2, packet, packet_byte_length, 1);
@@ -606,15 +617,15 @@ static int __update_compute_entries(uint8_t         *packet,
       }
 
       // Update the compute content directly into the packet
+      current_bit_position = compute_entries[index_compute_entry].bit_position;
       schc_decompression_status = add_bits_to_buffer(
           packet, packet_byte_length, &current_bit_position, compute_value, 16);
 
       // Deallocate compute_value from the pool
       pool_dealloc(compute_value, sizeof(uint8_t) * 2);
-    } else {
-      schc_decompression_status = 0;
     }
 
+    // Move to the next Compute entry index
     index_compute_entry++;
   }
 

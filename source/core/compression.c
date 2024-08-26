@@ -11,16 +11,16 @@
 /* ********************************************************************** */
 
 /**
- * @brief Handle compression according to the Compression Nature.
+ * @brief Handles compression according to the Compression Nature.
  *
- * @param schc_packet Pointer to the SCHC packet to fill.
- * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param schc_packet Pointer to the SCHC Packet to fill.
+ * @param schc_packet_max_byte_len Maximum byte length of the schc_packet.
  * @param packet_direction Packet Direction Indicator.
- * @param packet Pointer to the packet that needs to be compressed.
+ * @param packet Pointer to the Packet that needs to be compressed.
  * @param packet_byte_len Byte length of the packet to compress.
- * @param context Pointer to the context used to perform compression.
+ * @param context Pointer to the SCHC Context used to perform compression.
  * @param context_byte_len Byte length of the context.
- * @return The final byte length of the SCHC packet.
+ * @return The final byte length of the compressed SCHC packet.
  */
 static size_t __compression_handler(
     uint8_t* schc_packet, const size_t schc_packet_max_byte_len,
@@ -29,17 +29,17 @@ static size_t __compression_handler(
     const size_t context_byte_len);
 
 /**
- * @brief Add SCHC Rule ID at the beginning of the SCHC Packet (Compression
+ * @brief Adds SCHC Rule ID at the beginning of the SCHC Packet (Compression
  * Residue).
  *
  * @details RFC 8724, Section 5.1.
  *
- * @param schc_packet Pointer to the SCHC packet to fill.
- * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param schc_packet Pointer to the SCHC Packet to fill.
+ * @param schc_packet_max_byte_len Maximum byte length of the schc_packet.
  * @param bit_position Pointer to the current position, from where to add the
- * rule_id value.
- * @param rule_id Rule ID to add.
- * @param card_rule_descriptor Number of Rule Descriptor in the context.
+ * rule_id.
+ * @param rule_id Rule ID value to add.
+ * @param card_rule_descriptor Number of Rule Descriptor in the SCHC Context.
  * @return The compression status code, 1 for success, otherwise 0.
  */
 static int __add_schc_rule_id(uint8_t*     schc_packet,
@@ -48,13 +48,13 @@ static int __add_schc_rule_id(uint8_t*     schc_packet,
                               const uint8_t card_rule_descriptor);
 
 /**
- * @brief Handle packets that do not require compression.
+ * @brief Handles Packets with SCHC No-compression Nature.
  *
- * @param schc_packet Pointer to the SCHC packet to fill.
- * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param schc_packet Pointer to the SCHC Packet to fill.
+ * @param schc_packet_max_byte_len Maximum byte length of the schc_packet.
  * @param bit_position Pointer to the current position, from where to add the
- * rule_id value.
- * @param packet Pointer to the packet that needs to be compressed.
+ * packet content.
+ * @param packet Pointer to the Packet to add to schc_packet.
  * @param packet_byte_len Byte length of the packet to compress.
  * @return The compression status code, 1 for success, otherwise 0.
  */
@@ -64,19 +64,19 @@ static int __no_compression(uint8_t*     schc_packet,
                             const size_t packet_byte_len);
 
 /**
- * @brief Perform SCHC compression on the given packet using a specified Rule
+ * @brief Performs SCHC compression on the given packet using a specified Rule
  * Descriptor.
  *
- * @param schc_packet Pointer to the SCHC packet to fill.
- * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param schc_packet Pointer to the SCHC Packet to fill.
+ * @param schc_packet_max_byte_len Maximum byte length of the schc_packet.
  * @param bit_position Pointer to the current position, from where to add the
- * rule_id value.
+ * content.
  * @param packet_direction Packet Direction Indicator.
- * @param packet Pointer to the packet that needs to be compressed.
+ * @param packet Pointer to the Packet that needs to be compressed.
  * @param packet_byte_len Byte length of the packet to compress.
  * @param rule_descriptor Pointer to the Rule Descriptor used to compress the
  * packet.
- * @param context Pointer to the context used to perform compression.
+ * @param context Pointer to the SCHC Context used to perform compression.
  * @param context_byte_len Byte length of the context.
  * @return The compression status code, 1 for success, otherwise 0.
  */
@@ -89,15 +89,16 @@ static int __compression(uint8_t*                    schc_packet,
                          const uint8_t* context, const size_t context_byte_len);
 
 /**
- * @brief Handle fields with variable length during compression, basically CoAP.
+ * @brief Handles fields with Variable-Length during compression, basically CoAP
+ * Token and Options.
  *
  * @details RFC 8724, Section 7.4.2.
  *
- * @param schc_packet Pointer to the SCHC packet to fill.
- * @param schc_packet_max_byte_len Maximum byte length of the SCHC packet.
+ * @param schc_packet Pointer to the SCHC Packet to fill.
+ * @param schc_packet_max_byte_len Maximum byte length of the schc_packet.
  * @param bit_position Pointer to the current position, from where to add the
- * rule_id value.
- * @param variable_len Length of the variable length field.
+ * content.
+ * @param variable_len Bit length of the Variable-Length Field.
  * @return The compression status code, 1 for success, otherwise 0.
  */
 static int __variable_length_encoding(uint8_t*     schc_packet,
@@ -134,34 +135,40 @@ static size_t __compression_handler(
   int     schc_compression_status;
   int     index_rule_descriptor;
   uint8_t card_rule_descriptor;
-  size_t  bit_position;  // usefull to add field residue and determine the total
-                         // byte length of schc packet
+  size_t  bit_position;  // Usefull to append field_residue and determine the
+                         // total byte length of the final schc_packet
   rule_descriptor_t* rule_descriptor;
 
-  schc_compression_status = 0;
+  schc_compression_status = 0;  // Set to false
   index_rule_descriptor   = 0;
   card_rule_descriptor    = context[1];  // Number of Rule Descriptor
-                                         // position is 1 in the context
+                                         // Offset is 1 in the Context
 
   // Allocate rule_descriptor from the pool
   rule_descriptor = (rule_descriptor_t*) pool_alloc(sizeof(rule_descriptor_t));
 
-  // As we expect the no-compression rule as the last one in the context, we
-  // might not reach the default case before the last index possible.
+  // As we expect the no-compression Rule as the last one in the Context, we
+  // might not reach the default case before the last index feasible
   while (index_rule_descriptor < card_rule_descriptor &&
          !schc_compression_status) {
+    // Init
     bit_position = 0;
     memset(schc_packet, 0x00, schc_packet_max_byte_len);
 
     // Get Rule Descriptor
-    get_rule_descriptor(rule_descriptor, index_rule_descriptor, context,
-                        context_byte_len);
+    schc_compression_status = get_rule_descriptor(
+        rule_descriptor, index_rule_descriptor, context, context_byte_len);
 
     // SCHC Rule ID
-    __add_schc_rule_id(schc_packet, schc_packet_max_byte_len, &bit_position,
-                       rule_descriptor->id, card_rule_descriptor);
+    schc_compression_status =
+        __add_schc_rule_id(schc_packet, schc_packet_max_byte_len, &bit_position,
+                           rule_descriptor->id, card_rule_descriptor);
 
-    // SCHC packet filling
+    if (!schc_compression_status) {
+      break;
+    }
+
+    // SCHC Packet filling
     switch (rule_descriptor->nature) {
       case NATURE_COMPRESSION:
         schc_compression_status =
@@ -171,7 +178,7 @@ static size_t __compression_handler(
         break;
 
       case NATURE_FRAGMENTATION:
-        // not implemented
+        // Not implemented yet
         schc_compression_status = 0;
         break;
 
@@ -182,6 +189,7 @@ static size_t __compression_handler(
         break;
     }
 
+    // Move to the next Rule Descriptor index
     index_rule_descriptor++;
   }
 
@@ -251,13 +259,10 @@ static int __compression(uint8_t*                    schc_packet,
   uint8_t*                 extracted_field;
   rule_field_descriptor_t* rule_field_descriptor;
 
+  // Init
   schc_compression_status     = 1;
   index_rule_field_descriptor = 0;
   packet_bit_position         = 0;
-  payload_byte_position       = 0;
-  schc_len_to_add             = 0;
-  field_residue_byte_len      = 0;
-  extracted_field_byte_len    = 0;
   coap_tkl                    = 0x00;
   coap_option_delta           = 0x0000;
   coap_option_length          = 0x0000;
@@ -277,7 +282,11 @@ static int __compression(uint8_t*                    schc_packet,
         rule_field_descriptor, index_rule_field_descriptor,
         rule_descriptor->offset, context, context_byte_len);
 
-    // Check if the Rule Field Descriptor DI corresponds to the packet DI
+    if (!schc_compression_status) {
+      break;
+    }
+
+    // Check if the Rule Field Descriptor DI corresponds to the Packet DI
     if (rule_field_descriptor->di != DI_BI &&
         rule_field_descriptor->di != packet_direction) {
       index_rule_field_descriptor++;
@@ -308,11 +317,16 @@ static int __compression(uint8_t*                    schc_packet,
     extracted_field_byte_len = BYTE_LENGTH(schc_len_to_add);
     extracted_field =
         (uint8_t*) pool_alloc(sizeof(uint8_t) * extracted_field_byte_len);
-    // Extract the corresponding field from packet
-    extract_bits(extracted_field, extracted_field_byte_len, schc_len_to_add,
-                 &packet_bit_position, packet, packet_byte_len);
+    // Extract the corresponding Field from Packet
+    schc_compression_status =
+        extract_bits(extracted_field, extracted_field_byte_len, schc_len_to_add,
+                     &packet_bit_position, packet, packet_byte_len);
 
-    // Set the current CoAP Variable Length value
+    if (!schc_compression_status) {
+      break;
+    }
+
+    // Set the current CoAP Variable-Length value
     if (rule_field_descriptor->sid == SID_COAP_TKL) {
       coap_tkl = extracted_field[0];
     } else if (rule_field_descriptor->sid == SID_COAP_OPTION_DELTA ||
@@ -328,7 +342,7 @@ static int __compression(uint8_t*                    schc_packet,
                                       rule_field_descriptor->sid);
     }
 
-    // Compress the extracted field
+    // Compress the extracted_field
     // Steps :
     // 1. Update the amount of bits to add as Field Residue if necessary.
     // 2. Perform the (De)Compression Action defined in the current Rule Field
@@ -402,23 +416,25 @@ static int __compression(uint8_t*                    schc_packet,
     if (schc_len_to_add > 0) {
       if (rule_field_descriptor->cda == CDA_VALUE_SENT &&
           schc_compression_status) {
-        add_bits_to_buffer(schc_packet, schc_packet_max_byte_len, bit_position,
-                           extracted_field, schc_len_to_add);
+        schc_compression_status =
+            add_bits_to_buffer(schc_packet, schc_packet_max_byte_len,
+                               bit_position, extracted_field, schc_len_to_add);
       } else if (rule_field_descriptor->cda != CDA_VALUE_SENT &&
                  !schc_compression_status) {
         // This statement is only in case of error. Indeed, if compression
         // status is false. We still need to deallocate field_residue.
         pool_dealloc(field_residue, sizeof(uint8_t) * field_residue_byte_len);
       } else {
-        add_bits_to_buffer(schc_packet, schc_packet_max_byte_len, bit_position,
-                           field_residue, schc_len_to_add);
+        schc_compression_status =
+            add_bits_to_buffer(schc_packet, schc_packet_max_byte_len,
+                               bit_position, field_residue, schc_len_to_add);
 
         // Deallocate field_residue from the pool
         pool_dealloc(field_residue, sizeof(uint8_t) * field_residue_byte_len);
       }
     }
 
-    // Move to next Rule Field Descriptor
+    // Move to next Rule Field Descriptor index
     index_rule_field_descriptor++;
 
     // Deallocate extracted_field from the pool
@@ -428,9 +444,10 @@ static int __compression(uint8_t*                    schc_packet,
   // Add payload at the end of the SCHC Packet.
   if (schc_compression_status) {
     payload_byte_position = BYTE_LENGTH(packet_bit_position);
-    add_bits_to_buffer(schc_packet, schc_packet_max_byte_len, bit_position,
-                       packet + payload_byte_position,
-                       8 * (packet_byte_len - payload_byte_position));
+    schc_compression_status =
+        add_bits_to_buffer(schc_packet, schc_packet_max_byte_len, bit_position,
+                           packet + payload_byte_position,
+                           8 * (packet_byte_len - payload_byte_position));
   }
 
   // Deallocate rule_field_descriptor from the pool
