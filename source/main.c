@@ -1,3 +1,15 @@
+/**
+ * @file main.c
+ * @author Corentin Banier
+ * @brief CSCHC usage example.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #include "core/compression.h"
 #include "core/context.h"
 #include "core/decompression.h"

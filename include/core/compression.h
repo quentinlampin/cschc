@@ -1,3 +1,17 @@
+/**
+ * @file compression.h
+ * @author Corentin Banier
+ * @brief SCHC Compression implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @details See Section 7 SCHC RFC 8724.
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _COMPRESSION_H_
 #define _COMPRESSION_H_
 

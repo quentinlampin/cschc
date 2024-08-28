@@ -1,3 +1,15 @@
+/**
+ * @file ipv6.h
+ * @author Corentin Banier
+ * @brief IPv6 implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _IPV6_H_
 #define _IPV6_H_
 

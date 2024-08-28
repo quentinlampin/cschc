@@ -1,9 +1,25 @@
+/**
+ * @file log.h
+ * @author Corentin Banier
+ * @brief Logging implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _LOG_H_
 #define _LOG_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
+/**
+ * @brief These macros originate from
+ * https://stackoverflow.com/questions/111928/is-there-a-printf-converter-to-print-in-binary-format.
+ */
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)                                    \
   ((byte) & 0x80 ? '1' : '0'), ((byte) & 0x40 ? '1' : '0'),     \

@@ -1,3 +1,17 @@
+/**
+ * @file schc8724.h
+ * @author Corentin Banier and Quentin Lampin
+ * @brief Various definitions of SCHC elements from RFC 8724.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @details See SCHC RFC 8724.
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _RFC_SCHC_8724_H_
 #define _RFC_SCHC_8724_H_
 

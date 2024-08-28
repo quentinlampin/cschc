@@ -1,3 +1,17 @@
+/**
+ * @file context.h
+ * @author Corentin Banier
+ * @brief SCHC Context definition in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @details See SCHC RFC 8724 and https://github.com/cbanier/cschc_context.
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _CONTEXT_H_
 #define _CONTEXT_H_
 

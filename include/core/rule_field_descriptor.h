@@ -1,3 +1,17 @@
+/**
+ * @file rule_field_descriptor.h
+ * @author Corentin Banier
+ * @brief SCHC Rule Field Descriptor implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @details See Section 7.1 SCHC RFC 8724.
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _RULE_FIELD_DESCRIPTOR_H_
 #define _RULE_FIELD_DESCRIPTOR_H_
 

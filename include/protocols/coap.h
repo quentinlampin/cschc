@@ -1,3 +1,15 @@
+/**
+ * @file coap.h
+ * @author Corentin Banier and Quentin Lampin
+ * @brief CoAP implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _COAP_H_
 #define _COAP_H_
 

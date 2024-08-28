@@ -1,3 +1,17 @@
+/**
+ * @file actions.h
+ * @author Corentin Banier and Quentin Lampin
+ * @brief SCHC Compression Decompression Action implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @details See Section 7.4 SCHC RFC 8724.
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _COMPRESSION_DECOMPRESSION_ACTIONS_H_
 #define _COMPRESSION_DECOMPRESSION_ACTIONS_H_
 

@@ -1,3 +1,17 @@
+/**
+ * @file rule_descriptor.h
+ * @author Corentin Banier
+ * @brief SCHC Rule Descriptor implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @details See Section 7.1 SCHC RFC 8724.
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _RULE_DESCRIPTOR_H_
 #define _RULE_DESCRIPTOR_H_
 
@@ -5,6 +19,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#define CARD_RULE_DESCRIPTOR_OFFSET 1  // Offset in CSCHC Context
 
 /**
  * @brief Struct that defines a Rule Descriptor.

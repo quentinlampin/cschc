@@ -1,3 +1,15 @@
+/**
+ * @file binary.h
+ * @author Corentin Banier and Quentin Lampin
+ * @brief Binary operation implementation in CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _BINARY_H_
 #define _BINARY_H_
 

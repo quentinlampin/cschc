@@ -1,3 +1,15 @@
+/**
+ * @file memory.h
+ * @author Corentin Banier
+ * @brief Memory Pool implementation for CSCHC.
+ * @version 1.0
+ * @date 2024-08-26
+ *
+ * @copyright Copyright (c) Orange 2024. This project is released under the MIT
+ * License.
+ *
+ */
+
 #ifndef _MEMORY_H_
 #define _MEMORY_H_
 
