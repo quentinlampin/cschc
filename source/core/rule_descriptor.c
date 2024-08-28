@@ -8,8 +8,8 @@ int get_rule_descriptor(rule_descriptor_t *rule_descriptor,
                         const size_t context_byte_len) {
   uint16_t rule_descriptor_offset;
 
-  // context[1] represents the total number of Rule Descriptor in the Context
-  if (index >= context[1] || 2 + 2 * index + 1 >= context_byte_len) {
+  if (index >= context[CARD_RULE_DESCRIPTOR_OFFSET] ||
+      2 + 2 * index + 1 >= context_byte_len) {
     return 0;
   }
 

@@ -225,10 +225,9 @@ static int __get_schc_rule_descriptor(rule_descriptor_t *rule_descriptor,
   uint8_t schc_packet_rule_id;
   size_t  rule_len;
 
-  card_rule_descriptor = context[1];  // Number of Rule Descriptor
-                                      // Offset is 1 in the Context
-  rule_len            = bits_counter(card_rule_descriptor - 1);
-  schc_packet_rule_id = *schc_packet >> (8 - rule_len);
+  card_rule_descriptor = context[CARD_RULE_DESCRIPTOR_OFFSET];
+  rule_len             = bits_counter(card_rule_descriptor - 1);
+  schc_packet_rule_id  = *schc_packet >> (8 - rule_len);
 
   for (uint8_t index_rule_descriptor = 0;
        index_rule_descriptor < card_rule_descriptor; index_rule_descriptor++) {

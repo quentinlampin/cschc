@@ -141,8 +141,7 @@ static size_t __compression_handler(
 
   schc_compression_status = 0;  // Set to false
   index_rule_descriptor   = 0;
-  card_rule_descriptor    = context[1];  // Number of Rule Descriptor
-                                         // Offset is 1 in the Context
+  card_rule_descriptor    = context[CARD_RULE_DESCRIPTOR_OFFSET];
 
   // Allocate rule_descriptor from the pool
   rule_descriptor = (rule_descriptor_t*) pool_alloc(sizeof(rule_descriptor_t));
