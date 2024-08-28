@@ -63,6 +63,7 @@ __Important: In CSCHC, the compression is processed using only the Context. No p
 
     Here is the general structure :
     ```txt
+    // Rule Field Descriptor
     LEFT_SID, RIGHT_SID, LEFT_LEN, RIGHT_LEN, LEFT_POS, RIGHT_POS, 
     DIR_MO_CDA, CARD_TARGET_VALUE, 
     LEFT_OFFSET_TARGET_VALUE_0, RIGHT_OFFSET_TARGET_VALUE_0, 
@@ -72,12 +73,28 @@ __Important: In CSCHC, the compression is processed using only the Context. No p
 
     When MSB/LSB is needed :
     ```txt
+    // Rule Field Descriptor
     LEFT_SID, RIGHT_SID, LEFT_LEN, RIGHT_LEN, LEFT_POS, RIGHT_POS, 
     DIR_MO_CDA, LEFT_MSB_LEN, RIGHT_MSB_LEN, CARD_TARGET_VALUE, 
     LEFT_OFFSET_TARGET_VALUE_0, RIGHT_OFFSET_TARGET_VALUE_0, 
     ..., 
     LEFT_OFFSET_TARGET_VALUE_N, RIGHT_OFFSET_TARGET_VALUE_N
     ```
+
+    Example : 
+    ```txt
+    // Rule Field Descriptor
+    0x13, 0xcc, 0x0, 0x4, 0x0, 0x1, 0x40, 0x1, 0x3, 0x17, // First
+    0x13, 0xc9, 0x0, 0x8, 0x0, 0x1, 0x5a, 0x4, 0x3, 0x18, 
+    0x3, 0x19, 0x3, 0x1a, 0x3, 0x1b, // Second
+    0x13, 0xc8, 0x0, 0x10, 0x0, 0x1, 0x4c, 0x0, // Third
+    ...
+    ```
+    __First Rule Field Descriptor :__ _SID = 0x13cc ; LEN = 4 ; POS = 1 ; DI_MO_CDA = 0x40 (DI = 2 ; MO = 0 ; CDA = 0) ; CARD_TARGET_VALUE = 1 ; OFFSET_TARGET_VALUE = 0x317_
+
+    __Second Rule Field Descriptor :__ _SID = 0x13c9 ; LEN = 8 ; POS = 1 ; DI_MO_CDA = 0x5a (DI = 2 ; MO = 3 ; CDA = 2) ; CARD_TARGET_VALUE = 4 ; OFFSET_TARGET_VALUE = [0x318, 0x319, 0x31a, 0x31b]_
+
+    __Third Rule Field Descriptor :__ _SID = 0x13c8 ; LEN = 16 ; POS = 1 ; DI_MO_CDA = 0x4c (DI = 2 ; MO = 1 ; CDA = 4) ; CARD_TARGET_VALUE = 0_
 
 - Finally, the Target Values. We only concatenate them at the end of the CSCHC Context as you know from the Rule Field Descriptor which association has been done.
 
