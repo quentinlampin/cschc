@@ -1,66 +1,98 @@
 cmake_minimum_required(VERSION 3.14)
 
-set(CMAKE_C_FLAGS_DEBUG_INIT "-Wall -g -O0 -fsanitize=address")
+set(CMAKE_C_FLAGS_DEBUG_INIT 
+    "-Wall -Wextra -Wpedantic -Wformat=2 -Wno-unused-parameter -Wshadow \
+     -Wwrite-strings -Wstrict-prototypes -Wold-style-definition         \
+     -Wredundant-decls -Wnested-externs -Wmissing-include-dirs          \
+     -Wjump-misses-init -Wlogical-op -fsanitize=address")
 set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT "-Wall -g -O0 -fsanitize=address")
 set(CMAKE_C_FLAGS_RELEASE_INIT "-Wall")
 
 
 # library declaration
 project(cschc 
-    VERSION 0.1.0 
+    VERSION 1.0.0 
     DESCRIPTION "C implementation of Static Context Header Compression (SCHC), RFC 8724"
     LANGUAGES C
 )
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include/
-    ${PROJECT_SOURCE_DIR}/include/protocol/
+    ${PROJECT_SOURCE_DIR}/include/utils/
+    ${PROJECT_SOURCE_DIR}/include/protocols/
+    ${PROJECT_SOURCE_DIR}/include/core/
 )
 
-add_library(cschc 
-    ${PROJECT_SOURCE_DIR}/source/cschc.c
-    ${PROJECT_SOURCE_DIR}/source/buffer.c
-    ${PROJECT_SOURCE_DIR}/source/field_descriptor.c
-    ${PROJECT_SOURCE_DIR}/source/header_descriptor.c
-    ${PROJECT_SOURCE_DIR}/source/protocol/ipv6.c
-    ${PROJECT_SOURCE_DIR}/source/protocol/udp.c
-    ${PROJECT_SOURCE_DIR}/source/protocol/coap.c
+add_library(cschc
+    # Utils
+    ${PROJECT_SOURCE_DIR}/source/utils/log.c
+    ${PROJECT_SOURCE_DIR}/source/utils/binary.c
+    ${PROJECT_SOURCE_DIR}/source/utils/memory.c
+    # Headers
+    ${PROJECT_SOURCE_DIR}/source/protocols/headers.c
+    # Core
+    ${PROJECT_SOURCE_DIR}/source/core/rule_descriptor.c
+    ${PROJECT_SOURCE_DIR}/source/core/rule_field_descriptor.c
+    ${PROJECT_SOURCE_DIR}/source/core/matching_operators.c
+    ${PROJECT_SOURCE_DIR}/source/core/actions.c
+    ${PROJECT_SOURCE_DIR}/source/core/context.c
+    ${PROJECT_SOURCE_DIR}/source/core/compression.c
+    ${PROJECT_SOURCE_DIR}/source/core/decompression.c
 )
+
+
+add_executable(main ${PROJECT_SOURCE_DIR}/source/main.c)
+target_link_libraries(main PUBLIC cschc)
+
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTING)
-    # tests
+    # Tests
     enable_testing()
 
-    # - buffer
-    add_executable(test_buffer ${PROJECT_SOURCE_DIR}/test/test_buffer.c)
-    target_link_libraries(test_buffer PRIVATE cschc)
-    add_test(NAME test_buffer COMMAND $<TARGET_FILE:test_buffer>)
+    # - Binary
+    add_executable(test-binary ${PROJECT_SOURCE_DIR}/test/test_binary.c)
+    target_link_libraries(test-binary PRIVATE cschc)
+    add_test(NAME test-binary COMMAND $<TARGET_FILE:test-binary>)
 
-    # - field descriptor
-    add_executable(test_field_descriptor ${PROJECT_SOURCE_DIR}/test/test_field_descriptor.c)
-    target_link_libraries(test_field_descriptor PRIVATE cschc)
-    add_test(NAME test_field_descriptor COMMAND $<TARGET_FILE:test_field_descriptor>)
+    # - Memory
+    add_executable(test-memory ${PROJECT_SOURCE_DIR}/test/test_memory.c)
+    target_link_libraries(test-memory PRIVATE cschc)
+    add_test(NAME test-memory COMMAND $<TARGET_FILE:test-memory>)
 
-    # - header descriptor
-    add_executable(test_header_descriptor ${PROJECT_SOURCE_DIR}/test/test_header_descriptor.c)
-    target_link_libraries(test_header_descriptor PRIVATE cschc)
-    add_test(NAME test_header_descriptor COMMAND $<TARGET_FILE:test_header_descriptor>)
+    # - Headers
+    add_executable(test-headers ${PROJECT_SOURCE_DIR}/test/test_headers.c)
+    target_link_libraries(test-headers PRIVATE cschc)
+    add_test(NAME test-headers COMMAND $<TARGET_FILE:test-headers>)
 
-    # - IPv6 parser
-    add_executable(test_ipv6_parser ${PROJECT_SOURCE_DIR}/test/test_ipv6_parser.c)
-    target_link_libraries(test_ipv6_parser PRIVATE cschc)
-    add_test(NAME test_ipv6_parser COMMAND $<TARGET_FILE:test_ipv6_parser>)
+    # - Rule Descriptor
+    add_executable(test-rule-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_descriptor.c)
+    target_link_libraries(test-rule-descriptor PRIVATE cschc)
+    add_test(NAME test-rule-descriptor COMMAND $<TARGET_FILE:test-rule-descriptor>)
 
-    # - UDP parser
-    add_executable(test_udp_parser ${PROJECT_SOURCE_DIR}/test/test_udp_parser.c)
-    target_link_libraries(test_udp_parser PRIVATE cschc)
-    add_test(NAME test_udp_parser COMMAND $<TARGET_FILE:test_udp_parser>)
+    # - Rule Field Descriptor
+    add_executable(test-rule-field-descriptor ${PROJECT_SOURCE_DIR}/test/test_rule_field_descriptor.c)
+    target_link_libraries(test-rule-field-descriptor PRIVATE cschc)
+    add_test(NAME test-rule-field-descriptor COMMAND $<TARGET_FILE:test-rule-field-descriptor>)
 
-    # - CoAP parser
-    add_executable(test_coap_parser ${PROJECT_SOURCE_DIR}/test/test_coap_parser.c)
-    target_link_libraries(test_coap_parser PRIVATE cschc)
-    add_test(NAME test_coap_parser COMMAND $<TARGET_FILE:test_coap_parser>)
+    # - Matching Operators
+    add_executable(test-matching-operators ${PROJECT_SOURCE_DIR}/test/test_matching_operators.c)
+    target_link_libraries(test-matching-operators PRIVATE cschc)
+    add_test(NAME test-matching-operators COMMAND $<TARGET_FILE:test-matching-operators>)
 
+    # - Compression Decompression Actions
+    add_executable(test-comp-decomp-actions ${PROJECT_SOURCE_DIR}/test/test_actions.c)
+    target_link_libraries(test-comp-decomp-actions PRIVATE cschc)
+    add_test(NAME test-comp-decomp-actions COMMAND $<TARGET_FILE:test-comp-decomp-actions>)
+
+    # - Compression
+    add_executable(test-compression ${PROJECT_SOURCE_DIR}/test/test_compression.c)
+    target_link_libraries(test-compression PRIVATE cschc)
+    add_test(NAME test-compression COMMAND $<TARGET_FILE:test-compression>)
+
+    # - Decompression
+    add_executable(test-decompression ${PROJECT_SOURCE_DIR}/test/test_decompression.c)
+    target_link_libraries(test-decompression PRIVATE cschc)
+    add_test(NAME test-decompression COMMAND $<TARGET_FILE:test-decompression>)
 endif()
 
 
